@@ -46,8 +46,12 @@ export function ProjectCard({ project, headingLevel = "h3" }: { project: Project
       >
         <HairlineBeam trigger="hover" className="-top-px right-0 left-0 z-10" length={72} duration={1200} />
         <div className="relative aspect-[4/3] overflow-hidden" role="img" aria-label={t.projects.previewAlt.replace("{title}", title)}>
-          <m.div className="absolute inset-x-0 -top-[3%] h-[106%]" style={desktop && !reduce ? { y } : undefined}>
-            <div className="size-full transition-transform duration-200 ease-(--ease-out) group-hover:scale-[1.025] group-has-[a:focus-visible]:scale-[1.025] motion-reduce:transform-none">
+          {/* 3% overscan above and below, so the ±3% scroll drift never shows an edge. */}
+          <m.div
+            className={cn("absolute inset-x-0 -top-[3%] h-[106%]", project.preview === "finance" ? "bg-surface-soft" : "bg-surface")}
+            style={desktop && !reduce ? { y } : undefined}
+          >
+            <div className="absolute inset-x-0 top-[2.83%] bottom-[2.83%] transition-transform duration-200 ease-(--ease-out) group-hover:scale-[1.025] group-has-[a:focus-visible]:scale-[1.025] motion-reduce:transform-none">
               <ProjectPreview project={project} />
             </div>
           </m.div>

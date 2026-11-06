@@ -38,7 +38,7 @@ function Steps({
       {processSteps.map((step, i) => (
         <li key={step.number} data-beam-host="" className="relative grid grid-cols-[9px_1fr] gap-x-5 lg:block">
           <HairlineBeam trigger="key" fireKey={animated && i === active ? active : null} className="top-[4px] right-0 left-0 hidden lg:block" />
-          <HairlineNode state={state(i)} className="relative mt-[0.4rem] lg:mt-0" />
+          <HairlineNode state={state(i)} className="relative mt-[0.4rem] lg:mt-0 lg:block" />
           <div className="lg:mt-8">
             <p className={cn("t-label transition-colors duration-[180ms]", animated && i === active ? "text-ink" : "text-ink-3")}>{step.number}</p>
             <h3 className="t-h3 mt-2">{l(step.title)}</h3>

@@ -79,11 +79,11 @@ function ExportButtons({ onCopy, onDownload, copied }: { onCopy: () => void; onD
   const { t } = useI18n();
   return (
     <div className="flex flex-wrap gap-2.5">
-      <Button variant="secondary" onClick={onCopy} className="flex-1 sm:flex-none">
+      <Button variant="secondary" onClick={onCopy} className="flex-1 md:flex-none">
         <Copy aria-hidden="true" strokeWidth={1.5} className="size-4" />
         {copied ? t.brief.copied : t.brief.copy}
       </Button>
-      <Button variant="secondary" onClick={onDownload} className="flex-1 sm:flex-none">
+      <Button variant="secondary" onClick={onDownload} className="flex-1 md:flex-none">
         <Download aria-hidden="true" strokeWidth={1.5} className="size-4" />
         {t.brief.download}
       </Button>

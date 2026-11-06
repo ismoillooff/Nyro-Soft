@@ -62,13 +62,17 @@ export function Hero() {
           <div className="col-span-4 md:col-span-8 lg:col-span-7">
             <p className="hero-in t-label flex items-center gap-3 text-ink-2" style={delay(0)}>
               <HairlineNode state="active" />
-              <Hairline tone="strong" className="w-6" />
+              <Hairline tone="strong" length={24} />
               <span>{t.hero.label}</span>
             </p>
-            <h1 id="hero-title" className="hero-in-solid t-display mt-7 md:mt-8" style={delay(60)}>
-              <span className="block">{t.hero.line1}</span>
-              <span className="block">{t.hero.line2}</span>
-              <span className="block text-accent">{t.hero.line3}</span>
+            <h1
+              id="hero-title"
+              className="hero-in-solid t-display relative z-10 mt-7 md:mt-8 lg:-mr-[4.5rem] [&>span]:block lg:[&>span]:whitespace-nowrap"
+              style={delay(60)}
+            >
+              <span>{t.hero.line1}</span>
+              <span>{t.hero.line2}</span>
+              <span className="text-accent">{t.hero.line3}</span>
             </h1>
             <p className="hero-in t-lead mt-7 max-w-[44ch] text-ink-2 md:mt-8" style={delay(120)}>
               {t.hero.lead}

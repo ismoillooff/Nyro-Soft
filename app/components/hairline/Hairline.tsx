@@ -12,19 +12,31 @@ const TONE: Record<"default" | "strong" | "accent", string> = {
 export function Hairline({
   axis = "x",
   tone = "default",
+  length,
   className,
   style,
 }: {
   axis?: "x" | "y";
   tone?: keyof typeof TONE;
+  /** Fixed length (px or CSS length); otherwise the line fills its parent. */
+  length?: number | string;
   className?: string;
   style?: CSSProperties;
 }) {
+  const size =
+    length === undefined
+      ? axis === "x"
+        ? "h-px w-full"
+        : "h-full w-px"
+      : axis === "x"
+        ? "h-px"
+        : "w-px";
+  const dim = length === undefined ? undefined : axis === "x" ? { width: length } : { height: length };
   return (
     <span
       aria-hidden="true"
-      className={cn("pointer-events-none block shrink-0", axis === "x" ? "h-px w-full" : "h-full w-px", className)}
-      style={{ background: TONE[tone], ...style }}
+      className={cn("pointer-events-none block shrink-0", size, className)}
+      style={{ background: TONE[tone], ...dim, ...style }}
     />
   );
 }

@@ -9,7 +9,7 @@ export function briefLabels(tb: UiDict["brief"]): BriefTextLabels {
     stepService: tb.stepService,
     about: tb.about,
     stage: tb.stage,
-    link: tb.link,
+    link: tb.linkLabel,
     budget: tb.budget,
     timeline: tb.timeline,
     name: tb.name,
@@ -48,8 +48,9 @@ function Block({
       </div>
       <dl className="mt-1 grid gap-2">
         {rows.map((r) => (
-          <div key={r.label} className="grid gap-0.5 sm:grid-cols-[minmax(0,11rem)_minmax(0,1fr)] sm:gap-4">
-            <dt className="text-[0.875rem] text-ink-3">{r.label}</dt>
+          <div key={r.label} className="grid gap-0.5 md:grid-cols-[minmax(0,11rem)_minmax(0,1fr)] md:gap-4">
+            {/* A one-row block whose label repeats the block title keeps the label for screen readers only. */}
+            <dt className={rows.length === 1 && r.label === title ? "sr-only" : "text-[0.875rem] text-ink-3"}>{r.label}</dt>
             <dd className="min-w-0 text-[0.9375rem] break-words whitespace-pre-line text-ink">{r.value}</dd>
           </div>
         ))}

@@ -7,9 +7,9 @@ export function BriefProgress({ step, title }: { step: BriefStepIndex; title: st
   const { t } = useI18n();
   return (
     <div className="mb-8">
-      <p className="t-label flex flex-wrap items-baseline gap-x-2 text-ink-3">
+      <p className="t-label flex flex-col gap-x-2 text-ink-3 md:flex-row md:items-baseline">
         <span className="tabular">{fmt(t.brief.progress, { n: step + 1, total: BRIEF_STEP_COUNT })}</span>
-        <span aria-hidden="true">·</span>
+        <span aria-hidden="true" className="hidden md:inline">·</span>
         <span className="text-ink-2">{title}</span>
       </p>
       <div aria-hidden="true" className="mt-3 grid grid-cols-4 gap-1.5">

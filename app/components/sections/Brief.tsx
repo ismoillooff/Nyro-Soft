@@ -23,7 +23,7 @@ export function Brief() {
           </p>
         </div>
         <div className="col-span-4 min-w-0 md:col-span-8 lg:col-span-7 lg:col-start-6">
-          <HairlineFrame corners surface="surface" className="px-5 py-7 sm:px-8 sm:py-9 lg:px-10 lg:py-10">
+          <HairlineFrame corners surface="surface" className="px-5 py-7 md:px-8 md:py-9 lg:px-10 lg:py-10">
             <BriefForm />
           </HairlineFrame>
         </div>

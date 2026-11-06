@@ -77,8 +77,8 @@ export function CompareSlider({
         onPointerUp={onPointerUp}
         onPointerCancel={onPointerUp}
       >
-        <div className="absolute inset-0">{before}</div>
-        <div className="absolute inset-0" style={{ clipPath: "inset(0 calc(100% - var(--pos)) 0 0)" }}>
+        <div className="absolute inset-0 isolate">{before}</div>
+        <div className="absolute inset-0 isolate" style={{ clipPath: "inset(0 calc(100% - var(--pos)) 0 0)" }}>
           {after}
         </div>
         {/* Handle: a hairline with a round grip. Decorative; the input below is the control. */}

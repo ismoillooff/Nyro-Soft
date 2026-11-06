@@ -72,7 +72,7 @@ function ChoiceGroup({
         <span>{legend}</span>
         {marker && <span className="t-label font-normal text-ink-3">{marker}</span>}
       </legend>
-      <div className={columns === 2 ? "grid gap-2.5 sm:grid-cols-2" : "grid gap-2.5"}>
+      <div className={columns === 2 ? "grid gap-2.5 md:grid-cols-2" : "grid gap-2.5"}>
         {options.map((o) => (
           <Chip
             key={o.value}
@@ -158,7 +158,7 @@ export function StepProject({ state, dispatch, headingRef }: StepProps) {
         autoComplete="url"
         spellCheck={false}
         autoCapitalize="none"
-        label={tb.link}
+        label={tb.linkLabel}
         marker={tb.optional}
         hint={tb.linkHint}
         placeholder={tb.linkPlaceholder}

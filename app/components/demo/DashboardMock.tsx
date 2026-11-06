@@ -18,6 +18,18 @@ export const ORDERS = [
   { id: "1045", client: "Madina Yusupova", item: "Qog‘oz A4 ×10", sum: "650 000", status: "progress" },
   { id: "1044", client: "Sardor Aliyev", item: "Klaviatura", sum: "380 000", status: "done" },
   { id: "1043", client: "Nodira Qodirova", item: "Stol lampasi", sum: "210 000", status: "cancelled" },
+  { id: "1042", client: "Bekzod Ergashev", item: "Wi-Fi router", sum: "690 000", status: "done" },
+  { id: "1041", client: "Gulnora Saidova", item: "Ofis stoli", sum: "1 850 000", status: "progress" },
+] as const;
+
+const WEEK = [
+  { d: "Du", v: 48 },
+  { d: "Se", v: 62 },
+  { d: "Ch", v: 40 },
+  { d: "Pa", v: 74 },
+  { d: "Ju", v: 88 },
+  { d: "Sh", v: 56 },
+  { d: "Ya", v: 30 },
 ] as const;
 
 export type OrderStatus = "new" | "progress" | "done" | "cancelled";
@@ -108,11 +120,11 @@ function Wide({ wire }: { wire: boolean }) {
       </div>
 
       {/* Main */}
-      <div className="relative flex min-w-0 flex-1 flex-col gap-[1.1em] p-[1.4em]">
+      <div className="relative flex min-w-0 flex-1 flex-col gap-[1em] p-[1.4em]">
         <div className="flex items-center justify-between gap-[1em]">
           <div>
             {wire ? <Bar w="7em" className="h-[1.1em]" /> : <p className="text-[1.45em] font-semibold tracking-[-0.02em]">Buyurtmalar</p>}
-            {wire ? <Bar w="11em" className="mt-[0.5em]" /> : <p className="mt-[0.2em] text-[0.85em] text-ink-3">6-noyabr, payshanba</p>}
+            {wire ? <Bar w="11em" className="mt-[0.5em]" /> : <p className="mt-[0.2em] text-[0.85em] text-ink-3">Bugun, 14:30 holatiga</p>}
           </div>
           <div className="flex items-center gap-[0.6em]">
             <span className="flex h-[2.3em] w-[12em] items-center rounded-[0.45em] border border-line px-[0.7em] text-[0.85em] text-ink-3">
@@ -141,6 +153,42 @@ function Wide({ wire }: { wire: boolean }) {
               )}
             </div>
           ))}
+        </div>
+
+        <div className="grid h-[11em] shrink-0 grid-cols-[1.7fr_1fr] gap-[0.8em]">
+          <div className="flex flex-col rounded-[0.6em] border border-line bg-surface p-[0.9em]">
+            {wire ? <Bar w="30%" /> : <p className="text-[0.8em] text-ink-3">Haftalik tushum</p>}
+            <div className="mt-[0.8em] flex min-h-0 flex-1 items-end gap-[0.9em]">
+              {WEEK.map((w, i) => (
+                <div key={w.d} className="flex h-full flex-1 flex-col items-center justify-end gap-[0.35em]">
+                  <span
+                    className={cn("block w-full rounded-[0.25em]", wire ? "bg-[#E4E7EC]" : i === 4 ? "bg-ink" : "bg-[#D5D9E0]")}
+                    style={{ height: `${w.v}%` }}
+                  />
+                  {wire ? <Bar w="1.2em" className="h-[0.5em]" /> : <span className="text-[0.7em] text-ink-3">{w.d}</span>}
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="flex flex-col gap-[0.55em] rounded-[0.6em] border border-line bg-surface p-[0.9em]">
+            {wire ? <Bar w="40%" /> : <p className="text-[0.8em] text-ink-3">Holatlar bo‘yicha</p>}
+            {(
+              [
+                ["Yangi", 22, "bg-accent"],
+                ["Jarayonda", 35, "bg-ink"],
+                ["Yetkazildi", 54, "bg-ink-3"],
+                ["Bekor qilindi", 6, "bg-line-strong"],
+              ] as const
+            ).map(([label, pct, color]) => (
+              <div key={label} className="grid grid-cols-[6.5em_1fr_2.2em] items-center gap-[0.6em] text-[0.78em]">
+                {wire ? <Bar w="80%" /> : <span className="text-ink-2">{label}</span>}
+                <span className="block h-[0.45em] overflow-hidden rounded-full bg-[#EEF0F3]">
+                  <span className={cn("block h-full rounded-full", wire ? "bg-[#D5D9E0]" : color)} style={{ width: `${pct}%` }} />
+                </span>
+                {wire ? <Bar w="100%" /> : <span className="text-right text-ink-3 tabular-nums">{pct}%</span>}
+              </div>
+            ))}
+          </div>
         </div>
 
         <div className="relative min-h-0 flex-1 overflow-hidden rounded-[0.6em] border border-line bg-surface">

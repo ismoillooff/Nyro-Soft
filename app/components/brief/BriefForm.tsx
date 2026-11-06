@@ -187,12 +187,12 @@ export function BriefForm() {
 
       <div className="mt-10 flex flex-wrap items-center gap-3 border-t border-line pt-6">
         {state.step > 0 && (
-          <Button variant="secondary" onClick={goBack} aria-disabled={submitting || undefined} className="flex-1 sm:flex-none">
+          <Button variant="secondary" onClick={goBack} aria-disabled={submitting || undefined} className="flex-1 md:flex-none">
             {tb.back}
           </Button>
         )}
         {state.step < LAST_STEP ? (
-          <Button type="submit" arrow="right" className="flex-1 sm:ml-auto sm:flex-none">
+          <Button type="submit" arrow="right" className="flex-1 md:ml-auto md:flex-none">
             {primaryLabel}
           </Button>
         ) : (
@@ -201,7 +201,7 @@ export function BriefForm() {
             onClick={() => !submitting && submit()}
             aria-disabled={submitting || undefined}
             aria-busy={submitting || undefined}
-            className="flex-1 sm:ml-auto sm:flex-none"
+            className="flex-1 md:ml-auto md:flex-none"
             arrow={submitting ? undefined : "up-right"}
           >
             {submitting && <Spinner />}

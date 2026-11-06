@@ -95,9 +95,11 @@ export function Header() {
         </nav>
 
         <div className="flex items-center gap-3">
-          <ButtonLink to="/#brif" variant="primary" arrow="up-right" className="hidden h-10 px-4 md:inline-flex md:h-10">
-            {t.nav.contact}
-          </ButtonLink>
+          <div className="hidden md:block">
+            <ButtonLink to="/#brif" size="sm" arrow="up-right">
+              {t.nav.contact}
+            </ButtonLink>
+          </div>
           <MobileMenu items={items} activeId={current} />
         </div>
       </div>

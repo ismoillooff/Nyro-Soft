@@ -42,8 +42,15 @@ createServer((req, res) => {
   const status = found ? 200 : 404;
   const type = TYPES[extname(path)] ?? "application/octet-stream";
   const cache = path.includes(`${join(root, "assets")}`) ? "public, max-age=31536000, immutable" : "no-cache";
-  res.writeHead(status, { "Content-Type": type, "Cache-Control": cache });
-  createReadStream(path).pipe(res);
+  const stream = createReadStream(path);
+  stream.on("error", () => {
+    if (!res.headersSent) res.writeHead(500);
+    res.end();
+  });
+  stream.once("open", () => {
+    res.writeHead(status, { "Content-Type": type, "Cache-Control": cache });
+    stream.pipe(res);
+  });
 }).listen(port, () => {
   console.log(`Preview: http://localhost:${port}`);
 });

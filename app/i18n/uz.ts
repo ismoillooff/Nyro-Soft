@@ -111,6 +111,7 @@ export const uz = {
     aboutHint: "Kamida 20 belgi: nima qilmoqchisiz va kim uchun.",
     stage: "Hozirgi holat",
     link: "Havola (ixtiyoriy)",
+    linkLabel: "Havola",
     linkHint: "Mavjud sayt, dizayn yoki hujjat.",
     budget: "Taxminiy budjet",
     timeline: "Kutilayotgan muddat",

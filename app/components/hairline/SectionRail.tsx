@@ -87,7 +87,7 @@ export function SectionRail({ sections }: { sections: readonly SectionMeta[] }) 
           <span key={s.id} className="absolute left-0 flex -translate-x-1/2 items-start gap-2" style={{ top: y }}>
             <HairlineNode state={stateOf(i)} className="mt-[-4px]" />
             <span
-              className="t-label hidden text-ink-3 [writing-mode:vertical-rl] 2xl:block"
+              className="t-label hidden whitespace-nowrap text-ink-3 [text-orientation:sideways] [writing-mode:vertical-rl] 2xl:block"
               style={{ marginTop: 10 }}
             >
               {s.number} — {l(s.label)}

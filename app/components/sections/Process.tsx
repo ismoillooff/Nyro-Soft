@@ -29,11 +29,11 @@ function Steps({
     <ol className="relative mt-12 grid gap-10 md:mt-16 lg:grid-cols-4 lg:gap-6">
       {/* Mobile: vertical spine through the nodes. */}
       <span aria-hidden="true" className="pointer-events-none absolute top-1 bottom-1 left-[4px] w-px bg-line lg:hidden">
-        {progressY && <m.span className="absolute inset-0 origin-top bg-accent" style={{ scaleY: progressY }} />}
+        {progressY && <m.span className="absolute inset-0 origin-top bg-ink" style={{ scaleY: progressY }} />}
       </span>
       {/* Desktop: one rule joining the four nodes. */}
       <span aria-hidden="true" className="pointer-events-none absolute top-[4px] right-0 left-0 hidden h-px bg-line lg:block">
-        {progressX && <m.span className="absolute inset-0 origin-left bg-accent" style={{ scaleX: progressX }} />}
+        {progressX && <m.span className="absolute inset-0 origin-left bg-ink" style={{ scaleX: progressX }} />}
       </span>
       {processSteps.map((step, i) => (
         <li key={step.number} data-beam-host="" className="relative grid grid-cols-[9px_1fr] gap-x-5 lg:block">

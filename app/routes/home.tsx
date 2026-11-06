@@ -3,7 +3,7 @@ import type { Route } from "./+types/home";
 import { faq } from "~/content/faq";
 import { railSections } from "~/content/sections";
 import { site } from "~/content/site";
-import { uz } from "~/i18n/uz";
+import { i18nFor, localeFromPath } from "~/i18n";
 import { faqLd, organizationLd, seo, websiteLd } from "~/lib/seo";
 import { SectionRail } from "~/components/hairline/SectionRail";
 import { useActiveSection } from "~/components/motion/hooks";
@@ -18,17 +18,16 @@ import { Support } from "~/components/sections/Support";
 import { Team } from "~/components/sections/Team";
 import { TechMarquee } from "~/components/sections/TechMarquee";
 
-export const meta: Route.MetaFunction = () =>
-  seo({
-    title: uz.meta.homeTitle,
-    description: uz.meta.homeDescription,
+export const meta: Route.MetaFunction = ({ location }) => {
+  const { t, l, locale } = i18nFor(localeFromPath(location.pathname));
+  return seo({
+    title: t.meta.homeTitle,
+    description: t.meta.homeDescription,
     path: "/",
-    jsonLd: [
-      organizationLd(site.description.uz),
-      websiteLd(),
-      faqLd(faq.map((f) => ({ q: f.q.uz, a: f.a.uz }))),
-    ],
+    locale,
+    jsonLd: [organizationLd(l(site.description)), websiteLd(), faqLd(faq.map((f) => ({ q: l(f.q), a: l(f.a) })))],
   });
+};
 
 const RAIL_IDS = railSections.map((s) => s.id);
 

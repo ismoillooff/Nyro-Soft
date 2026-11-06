@@ -1,12 +1,13 @@
 import type { Route } from "./+types/not-found";
-import { uz } from "~/i18n/uz";
-import { useI18n } from "~/i18n";
+import { i18nFor, localeFromPath, useI18n } from "~/i18n";
 import { pageTitle, seo } from "~/lib/seo";
 import { HairlineFigure } from "~/components/hairline/HairlineFigure";
 import { ButtonLink } from "~/components/ui/Button";
 
-export const meta: Route.MetaFunction = () =>
-  seo({ title: pageTitle(uz.meta.notFoundTitle), description: uz.notFound.text, path: "/404", noindex: true });
+export const meta: Route.MetaFunction = ({ location }) => {
+  const { t, locale } = i18nFor(localeFromPath(location.pathname));
+  return seo({ title: pageTitle(t.meta.notFoundTitle), description: t.notFound.text, path: "/404", noindex: true, locale });
+};
 
 /** Shared by the catch-all route and by unknown service/project slugs. */
 export function NotFoundContent() {

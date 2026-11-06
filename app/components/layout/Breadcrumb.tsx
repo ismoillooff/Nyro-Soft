@@ -1,4 +1,4 @@
-import { Link } from "react-router";
+import { LocaleLink as Link } from "~/components/ui/LocaleLink";
 import { useI18n } from "~/i18n";
 
 export interface Crumb {

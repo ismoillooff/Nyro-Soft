@@ -18,9 +18,9 @@ export interface SiteSocial {
  */
 export const site = {
   name: "Nyro Soft",
-  tagline: { uz: "G‘oyadan — natijagacha." } satisfies Localized,
+  tagline: { uz: "G‘oyadan — natijagacha.", ru: "От идеи — до результата." } satisfies Localized,
   description: {
-    uz: "Nyro Soft — veb platformalar, mobil ilovalar, UI/UX dizayn va biznesni avtomatlashtirish bo‘yicha digital mahsulotlar studiyasi.",
+    uz: "Nyro Soft — veb platformalar, mobil ilovalar, UI/UX dizayn va biznesni avtomatlashtirish bo‘yicha digital mahsulotlar studiyasi.", ru: "Nyro Soft — студия цифровых продуктов: веб-платформы, мобильные приложения, UI/UX-дизайн и автоматизация бизнеса.",
   } satisfies Localized,
   contacts: [] as readonly SiteContact[],
   social: [] as readonly SiteSocial[],

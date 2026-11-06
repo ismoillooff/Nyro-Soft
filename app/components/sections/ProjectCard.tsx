@@ -1,6 +1,7 @@
 import { m, useScroll, useTransform } from "motion/react";
 import { useRef } from "react";
-import { Link, useViewTransitionState } from "react-router";
+import { useViewTransitionState } from "react-router";
+import { LocaleLink as Link } from "~/components/ui/LocaleLink";
 import type { Project } from "~/content/projects";
 import { useI18n } from "~/i18n";
 import { cn } from "~/lib/cn";
@@ -34,10 +35,10 @@ export const PREVIEW_VT = "project-preview";
  * the h3); nothing inside is separately interactive.
  */
 export function ProjectCard({ project, headingLevel = "h3" }: { project: Project; headingLevel?: "h2" | "h3" }) {
-  const { t, l } = useI18n();
+  const { t, l, p } = useI18n();
   const ref = useRef<HTMLElement>(null);
   const href = `/loyihalar/${project.slug}`;
-  const transitioning = useViewTransitionState(href);
+  const transitioning = useViewTransitionState(p(href));
   const desktop = useMediaQuery("(min-width: 1024px)");
   const reduce = useReducedMotionPref();
   const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });

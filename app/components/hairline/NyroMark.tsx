@@ -9,6 +9,8 @@ export interface NyroMarkProps {
   className?: string;
   /** The read-out, each time it changes: "N" at rest, then "01 · tuzilma", "02 · dizayn", "03 · natija". */
   onRead?: (text: string) => void;
+  /** Optional translation of the read-out ("01 · tuzilma" → "01 · структура"). */
+  readMap?: Readonly<Record<string, string>>;
 }
 
 /** How long the pointer must stay away from the hero before the figure walks itself (desktop). */
@@ -33,7 +35,9 @@ const STYLE = HAIRLINE_KERNEL_CSS + NYRO_ENTER_CSS;
  * plate. It walks itself (play) only in view, never under reduced motion, and
  * on hover devices only after the pointer has stayed away from the hero 4 s.
  */
-export function NyroMark({ label, className, onRead }: NyroMarkProps) {
+export function NyroMark({ label, className, onRead, readMap }: NyroMarkProps) {
+  const readMapRef = useRef(readMap);
+  readMapRef.current = readMap;
   const stageRef = useRef<HTMLDivElement>(null);
   const svgRef = useRef<SVGSVGElement>(null);
   const readRef = useRef<HTMLSpanElement>(null);
@@ -57,7 +61,7 @@ export function NyroMark({ label, className, onRead }: NyroMarkProps) {
       set textContent(value: string) {
         if (value === text) return;
         text = value;
-        const shown = value === "rest" ? "N" : value;
+        const shown = value === "rest" ? "N" : (readMapRef.current?.[value] ?? value);
         readEl.textContent = shown;
         onReadRef.current?.(shown);
       },

@@ -6,6 +6,9 @@ import { Hairline, HairlineNode, MarkedRule } from "~/components/hairline/Hairli
 import { NyroMark } from "~/components/hairline/NyroMark";
 import { useMediaQuery, useParallax } from "~/components/motion/hooks";
 
+/** The figure names its layers in Uzbek; Russian pages translate the read-out. */
+const RU_READ = { "01 · tuzilma": "01 · структура", "02 · dizayn": "02 · дизайн", "03 · natija": "03 · результат" } as const;
+
 const delay = (ms: number) => ({ "--d": `${ms}ms` }) as CSSProperties;
 
 /**
@@ -49,7 +52,7 @@ function PerspectiveGrid() {
 }
 
 export function Hero() {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const ref = useRef<HTMLElement>(null);
   const desktop = useMediaQuery("(min-width: 1024px)");
   const gridY = useParallax(ref, 24);
@@ -101,7 +104,7 @@ export function Hero() {
               style={{ background: "radial-gradient(closest-side, var(--surface-soft), transparent)" }}
             />
             <m.div className="relative mx-auto w-full max-w-[320px] lg:max-w-none" style={desktop ? { y: markY } : undefined}>
-              <NyroMark label={t.hero.figureLabel} />
+              <NyroMark label={t.hero.figureLabel} readMap={locale === "ru" ? RU_READ : undefined} />
             </m.div>
           </div>
         </div>

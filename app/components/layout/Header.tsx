@@ -1,11 +1,13 @@
 import { m } from "motion/react";
 import { useEffect, useState } from "react";
-import { Link, useLocation } from "react-router";
-import { useI18n } from "~/i18n";
+import { useLocation } from "react-router";
+import { LocaleLink as Link } from "~/components/ui/LocaleLink";
+import { stripLocale, useI18n } from "~/i18n";
 import { cn } from "~/lib/cn";
 import { spring } from "~/motion/tokens";
 import { ButtonLink } from "~/components/ui/Button";
 import { useActiveSectionId, usePageProgress } from "~/components/motion/hooks";
+import { LanguageSwitch } from "./LanguageSwitch";
 import { Wordmark } from "./Logo";
 import { MobileMenu } from "./MobileMenu";
 import { primaryNav } from "./nav";
@@ -29,7 +31,7 @@ function ProgressLine() {
 export function Header() {
   const { t } = useI18n();
   const { pathname } = useLocation();
-  const isHome = pathname === "/";
+  const isHome = stripLocale(pathname) === "/";
   const activeId = useActiveSectionId();
   const current = isHome ? activeId : null;
   const [scrolled, setScrolled] = useState(false);
@@ -95,6 +97,7 @@ export function Header() {
         </nav>
 
         <div className="flex items-center gap-3">
+          <LanguageSwitch className="hidden lg:flex" />
           <div className="hidden md:block">
             <ButtonLink to="/#brif" size="sm" arrow="up-right">
               {t.nav.contact}

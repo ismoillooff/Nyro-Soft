@@ -1,13 +1,12 @@
 import fontUrl from "@fontsource-variable/geist/files/geist-latin-wght-normal.woff2?url";
 import type { ReactNode } from "react";
-import { isRouteErrorResponse, Links, Meta, Outlet, Scripts, ScrollRestoration } from "react-router";
+import { isRouteErrorResponse, Links, Meta, Outlet, Scripts, ScrollRestoration, useLocation } from "react-router";
 import type { Route } from "./+types/root";
 import { Footer } from "./components/layout/Footer";
 import { Header } from "./components/layout/Header";
 import { MotionProvider } from "./components/motion/MotionProvider";
 import { buttonClass } from "./components/ui/Button";
-import { I18nProvider, useI18n } from "./i18n";
-import { uz } from "./i18n/uz";
+import { i18nFor, I18nProvider, localeFromPath, useI18n } from "./i18n";
 import stylesheet from "./styles/app.css?url";
 
 export const links: Route.LinksFunction = () => [
@@ -20,8 +19,9 @@ export const links: Route.LinksFunction = () => [
 ];
 
 export function Layout({ children }: { children: ReactNode }) {
+  const locale = localeFromPath(useLocation().pathname);
   return (
-    <html lang="uz" dir="ltr">
+    <html lang={locale} dir="ltr">
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -54,8 +54,9 @@ function SkipLink() {
 }
 
 function Shell({ children }: { children: ReactNode }) {
+  const locale = localeFromPath(useLocation().pathname);
   return (
-    <I18nProvider locale="uz">
+    <I18nProvider locale={locale}>
       <MotionProvider>
         <div className="flex min-h-svh flex-col">
           <SkipLink />
@@ -83,7 +84,8 @@ export function HydrateFallback() {
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
-  const t = uz.error;
+  const { t: dict, p } = i18nFor(localeFromPath(useLocation().pathname));
+  const t = dict.error;
   let detail: string | null = null;
   if (import.meta.env.DEV) {
     detail = isRouteErrorResponse(error)
@@ -97,8 +99,8 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
       <div className="container-site section-y">
         <h1 className="t-h2">{t.title}</h1>
         <p className="t-lead mt-4 max-w-[44ch] text-ink-2">{t.text}</p>
-        <a href="/" className={buttonClass("secondary", "mt-8")}>
-          {uz.notFound.home}
+        <a href={p("/")} className={buttonClass("secondary", "mt-8")}>
+          {dict.notFound.home}
         </a>
         {detail && <pre className="mt-8 overflow-x-auto text-[0.875rem] text-ink-3">{detail}</pre>}
       </div>

@@ -1,6 +1,7 @@
 import { ArrowDown, ArrowRight, ArrowUp, ArrowUpRight, type LucideIcon } from "lucide-react";
 import type { ButtonHTMLAttributes, ReactNode } from "react";
-import { Link, type LinkProps } from "react-router";
+import type { LinkProps } from "react-router";
+import { LocaleLink as Link } from "./LocaleLink";
 import { cn } from "~/lib/cn";
 
 export type ButtonVariant = "primary" | "secondary" | "link";

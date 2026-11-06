@@ -1,6 +1,6 @@
 import { AnimatePresence, m } from "motion/react";
 import { useState } from "react";
-import { Link } from "react-router";
+import { LocaleLink as Link } from "~/components/ui/LocaleLink";
 import { projectFilters, projects, type Project } from "~/content/projects";
 import { homeSections } from "~/content/sections";
 import type { ProjectCategory } from "~/content/services";

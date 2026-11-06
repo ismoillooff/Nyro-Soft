@@ -1,12 +1,10 @@
 import { createContext, use, type ReactNode } from "react";
 import { ru } from "./ru";
-import { DEFAULT_LOCALE, type Locale, type Localized } from "./types";
+import { DEFAULT_LOCALE, localize, type Locale, type Localized } from "./types";
 import { uz, type UiDict } from "./uz";
 
 export type { Locale, Localized } from "./types";
-
-/** Whether every key of a locale is translated; filled by scripts/check-i18n.ts rules at build time. */
-export const ENABLED_LOCALES: readonly Locale[] = ["uz"];
+export { ENABLED_LOCALES, isEnabled, localeFromPath, localize, stripLocale } from "./types";
 
 function merge<T extends object>(base: T, over: unknown): T {
   if (!over || typeof over !== "object") return base;
@@ -29,20 +27,31 @@ export interface I18n {
   readonly t: UiDict;
   /** Picks the current language from a content value, falling back to Uzbek. */
   readonly l: (value: Localized) => string;
+  /** Prefixes an internal path for the current locale. */
+  readonly p: (path: string) => string;
 }
 
-function make(locale: Locale): I18n {
-  return {
-    locale,
-    t: dictionaries[locale],
-    l: (value) => (locale === "uz" ? value.uz : (value[locale] ?? value.uz)),
-  };
+const cache = new Map<Locale, I18n>();
+
+/** The strings for a locale, outside React too (meta functions). */
+export function i18nFor(locale: Locale): I18n {
+  let value = cache.get(locale);
+  if (!value) {
+    value = {
+      locale,
+      t: dictionaries[locale],
+      l: (v) => (locale === "uz" ? v.uz : (v[locale] ?? v.uz)),
+      p: (path) => localize(path, locale),
+    };
+    cache.set(locale, value);
+  }
+  return value;
 }
 
-const I18nContext = createContext<I18n>(make(DEFAULT_LOCALE));
+const I18nContext = createContext<I18n>(i18nFor(DEFAULT_LOCALE));
 
 export function I18nProvider({ locale, children }: { locale: Locale; children: ReactNode }) {
-  return <I18nContext value={make(locale)}>{children}</I18nContext>;
+  return <I18nContext value={i18nFor(locale)}>{children}</I18nContext>;
 }
 
 export function useI18n(): I18n {

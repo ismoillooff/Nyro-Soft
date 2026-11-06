@@ -1,4 +1,4 @@
-import { Link } from "react-router";
+import { LocaleLink as Link } from "~/components/ui/LocaleLink";
 import { services } from "~/content/services";
 import { site } from "~/content/site";
 import { useI18n } from "~/i18n";

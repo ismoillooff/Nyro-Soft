@@ -1,9 +1,10 @@
 import { Menu, X } from "lucide-react";
 import { useCallback, useEffect, useId, useRef, useState } from "react";
-import { Link } from "react-router";
+import { LocaleLink as Link } from "~/components/ui/LocaleLink";
 import { useI18n } from "~/i18n";
 import { cn } from "~/lib/cn";
 import { ButtonLink } from "~/components/ui/Button";
+import { LanguageSwitch } from "./LanguageSwitch";
 import { Wordmark } from "./Logo";
 import type { NavItem } from "./nav";
 
@@ -105,6 +106,7 @@ export function MobileMenu({ items, activeId }: { items: readonly NavItem[]; act
                 </li>
               ))}
             </ul>
+            <LanguageSwitch className="menu-item mt-6" />
             <div className="menu-item mt-8" style={{ ["--i" as string]: items.length }}>
               <ButtonLink to="/#brif" onClick={hide} arrow="up-right" className="w-full">
                 {t.nav.contact}

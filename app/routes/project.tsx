@@ -1,11 +1,10 @@
 import { m } from "motion/react";
 import { Info } from "lucide-react";
 import { useRef } from "react";
-import { Link } from "react-router";
+import { LocaleLink as Link } from "~/components/ui/LocaleLink";
 import type { Route } from "./+types/project";
 import { getProject, projects, type Project } from "~/content/projects";
-import { useI18n } from "~/i18n";
-import { uz } from "~/i18n/uz";
+import { i18nFor, localeFromPath, useI18n } from "~/i18n";
 import { absoluteUrl, breadcrumbLd, pageTitle, seo } from "~/lib/seo";
 import { cn } from "~/lib/cn";
 import { DashboardMock } from "~/components/demo/DashboardMock";
@@ -20,28 +19,34 @@ import { Tag } from "~/components/ui/Tag";
 import { NotFoundContent } from "./not-found";
 import { CtaBand } from "./service";
 
-export const meta: Route.MetaFunction = ({ params }) => {
-  const p = getProject(params.slug);
-  if (!p) return seo({ title: pageTitle(uz.meta.notFoundTitle), description: uz.notFound.text, path: "/404", noindex: true });
-  const path = `/loyihalar/${p.slug}`;
+export const meta: Route.MetaFunction = ({ params, location }) => {
+  const { t, l, locale, p: lp } = i18nFor(localeFromPath(location.pathname));
+  const pr = getProject(params.slug);
+  if (!pr) return seo({ title: pageTitle(t.meta.notFoundTitle), description: t.notFound.text, path: "/404", noindex: true, locale });
+  const path = `/loyihalar/${pr.slug}`;
   return seo({
-    title: pageTitle(`${p.title.uz} — ${uz.projects.concept.toLowerCase()}`),
-    description: p.description.uz,
+    title: pageTitle(`${l(pr.title)} — ${t.projects.concept.toLowerCase()}`),
+    description: l(pr.description),
     path,
+    locale,
     type: "article",
     jsonLd: [
-      breadcrumbLd([
-        { name: uz.service.breadcrumbHome, path: "/" },
-        { name: uz.project.breadcrumbProjects, path: "/#loyihalar" },
-        { name: p.title.uz, path },
-      ]),
+      breadcrumbLd(
+        [
+          { name: t.service.breadcrumbHome, path: "/" },
+          { name: t.project.breadcrumbProjects, path: "/#loyihalar" },
+          { name: l(pr.title), path },
+        ],
+        locale,
+      ),
       {
         "@context": "https://schema.org",
         "@type": "CreativeWork",
-        name: p.title.uz,
-        description: p.description.uz,
-        url: absoluteUrl(path),
-        keywords: p.tags.join(", "),
+        name: l(pr.title),
+        description: l(pr.description),
+        url: absoluteUrl(lp(path)),
+        inLanguage: locale,
+        keywords: pr.tags.join(", "),
         creator: { "@type": "Organization", name: "Nyro Soft" },
       },
     ],

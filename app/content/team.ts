@@ -12,7 +12,7 @@ export interface TeamMember {
 
 /** Fill in real people only. Production shows `ready` members, or the principles when there are none. */
 export const team: readonly TeamMember[] = [
-  { id: "member-1", status: "placeholder", name: "Ism Familiya", role: { uz: "Lavozim" } },
-  { id: "member-2", status: "placeholder", name: "Ism Familiya", role: { uz: "Lavozim" } },
-  { id: "member-3", status: "placeholder", name: "Ism Familiya", role: { uz: "Lavozim" } },
+  { id: "member-1", status: "placeholder", name: "Ism Familiya", role: { uz: "Lavozim", ru: "Должность" } },
+  { id: "member-2", status: "placeholder", name: "Ism Familiya", role: { uz: "Lavozim", ru: "Должность" } },
+  { id: "member-3", status: "placeholder", name: "Ism Familiya", role: { uz: "Lavozim", ru: "Должность" } },
 ];

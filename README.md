@@ -146,7 +146,13 @@ server {
 
 ## Localization
 
-Uzbek is complete. Russian keys mirror Uzbek (`app/i18n/ru.ts` and `ru` fields in `app/content`). `npm run check:i18n` reports the coverage; the UZ / RU switch stays hidden until it reports 100% (`ENABLED_LOCALES` in `app/i18n/index.tsx`).
+Uzbek (Latin) is the source and lives at the root (`/`, `/xizmatlar/…`); Russian is published under `/ru` (`/ru`, `/ru/xizmatlar/…`) with the same slugs.
+
+- Interface strings: `app/i18n/uz.ts` and `app/i18n/ru.ts`; content: `{ uz, ru }` fields in `app/content`.
+- `npm run check:i18n` must report 100% before a language is published; `ENABLED_LOCALES` in `app/i18n/types.ts` turns on its routes, prerender, sitemap entries, `hreflang` alternates and the UZ / RU switch.
+- Internal links use `LocaleLink` (or `p(path)` from `useI18n()`), which adds the `/ru` prefix on Russian pages.
+- Cyrillic font subsets are declared with `unicode-range`, so Uzbek pages never download them.
+- The product mock-ups and the working "Natija" sample keep Uzbek UI text on both languages (they depict a product for the Uzbek market).
 
 ## Accessibility and motion
 

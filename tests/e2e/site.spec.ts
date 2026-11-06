@@ -1,6 +1,6 @@
 import { expect, test, type Page } from "@playwright/test";
 
-const ROUTES = [
+const UZ_ROUTES = [
   "/",
   "/xizmatlar/web-platformalar",
   "/xizmatlar/mobil-ilovalar",
@@ -9,6 +9,31 @@ const ROUTES = [
   "/loyihalar/biznes-boshqaruv-platformasi",
   "/loyihalar/mobil-moliya-ilovasi",
 ];
+const RU_ROUTES = UZ_ROUTES.map((p) => (p === "/" ? "/ru" : `/ru${p}`));
+const ROUTES = [...UZ_ROUTES, ...RU_ROUTES];
+
+test.describe("languages", () => {
+  test("Russian pages declare lang, hreflang and localized links", async ({ page }) => {
+    await page.goto("/ru");
+    await expect(page.locator("html")).toHaveAttribute("lang", "ru");
+    await expect(page.getByRole("heading", { level: 1 })).toContainText("Большие идеи.");
+    await expect(page.locator('link[rel="alternate"][hreflang="uz"]')).toHaveCount(1);
+    await expect(page.locator('link[rel="alternate"][hreflang="ru"]')).toHaveCount(1);
+    await expect(page.locator('link[rel="alternate"][hreflang="x-default"]')).toHaveCount(1);
+    await expect(page.locator('a[href^="/xizmatlar/"]')).toHaveCount(0);
+  });
+
+  test("the switch leads to the same page in the other language", async ({ page }) => {
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await page.goto("/xizmatlar/ui-ux-dizayn");
+    const ru = page.locator('header a[hreflang="ru"]').first();
+    await expect(ru).toHaveAttribute("href", "/ru/xizmatlar/ui-ux-dizayn");
+    await ru.click();
+    await expect(page).toHaveURL(/\/ru\/xizmatlar\/ui-ux-dizayn$/);
+    await expect(page.locator("html")).toHaveAttribute("lang", "ru");
+    await expect(page.locator('header a[hreflang="ru"]').first()).toHaveAttribute("aria-current", "true");
+  });
+});
 
 /** Console errors other than missing optional resources. */
 function trackErrors(page: Page): string[] {

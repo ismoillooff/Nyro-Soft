@@ -2,8 +2,7 @@ import { Check } from "lucide-react";
 import type { Route } from "./+types/service";
 import { projects } from "~/content/projects";
 import { getService } from "~/content/services";
-import { useI18n } from "~/i18n";
-import { uz } from "~/i18n/uz";
+import { i18nFor, localeFromPath, useI18n } from "~/i18n";
 import { breadcrumbLd, faqLd, pageTitle, seo, serviceLd } from "~/lib/seo";
 import { Hairline, MarkedRule } from "~/components/hairline/Hairline";
 import { HairlineFigure } from "~/components/hairline/HairlineFigure";
@@ -17,22 +16,27 @@ import { Accordion } from "~/components/ui/Accordion";
 import { ButtonLink } from "~/components/ui/Button";
 import { NotFoundContent } from "./not-found";
 
-export const meta: Route.MetaFunction = ({ params }) => {
+export const meta: Route.MetaFunction = ({ params, location }) => {
+  const { t, l, locale } = i18nFor(localeFromPath(location.pathname));
   const s = getService(params.slug);
-  if (!s) return seo({ title: pageTitle(uz.meta.notFoundTitle), description: uz.notFound.text, path: "/404", noindex: true });
+  if (!s) return seo({ title: pageTitle(t.meta.notFoundTitle), description: t.notFound.text, path: "/404", noindex: true, locale });
   const path = `/xizmatlar/${s.slug}`;
   return seo({
-    title: pageTitle(s.title.uz),
-    description: s.description.uz,
+    title: pageTitle(l(s.title)),
+    description: l(s.description),
     path,
+    locale,
     jsonLd: [
-      serviceLd(s.title.uz, s.description.uz, path),
-      breadcrumbLd([
-        { name: uz.service.breadcrumbHome, path: "/" },
-        { name: uz.service.breadcrumbServices, path: "/#xizmatlar" },
-        { name: s.title.uz, path },
-      ]),
-      faqLd(s.faq.map((f) => ({ q: f.q.uz, a: f.a.uz }))),
+      serviceLd(l(s.title), l(s.description), path, locale),
+      breadcrumbLd(
+        [
+          { name: t.service.breadcrumbHome, path: "/" },
+          { name: t.service.breadcrumbServices, path: "/#xizmatlar" },
+          { name: l(s.title), path },
+        ],
+        locale,
+      ),
+      faqLd(s.faq.map((f) => ({ q: l(f.q), a: l(f.a) }))),
     ],
   });
 };

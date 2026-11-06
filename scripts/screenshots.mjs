@@ -8,7 +8,7 @@ const reduced = flags.includes("--reduced");
 const full = !flags.includes("--viewport");
 mkdirSync(out, { recursive: true });
 const browser = await chromium.launch({ channel: "chrome" });
-const name = path === "/" ? "home" : path.replace(/[\/?#=]+/g, "_").replace(/^_|_$/g, "");
+const name = path === "/" ? "home" : path.replace(/[/?#=]+/g, "_").replace(/^_|_$/g, "");
 for (const w of widths) {
   const ctx = await browser.newContext({
     viewport: { width: w, height: w < 800 ? 780 : 900 },

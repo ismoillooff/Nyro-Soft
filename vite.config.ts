@@ -13,7 +13,7 @@ function hairlineKernel(): Plugin {
     name: "nyro:hairline-kernel",
     enforce: "pre",
     transform(code, id) {
-      if (!/[\/]app[\/]vendor[\/]hairline[\/]kernel\.js(\?.*)?$/.test(id)) return null;
+      if (!/[/\\]app[/\\]vendor[/\\]hairline[/\\]kernel\.js(\?.*)?$/.test(id)) return null;
       return { code: `${code}\nexport default HL;\n`, map: null };
     },
   };

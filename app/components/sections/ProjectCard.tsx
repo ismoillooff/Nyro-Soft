@@ -11,8 +11,19 @@ import { Arrow } from "~/components/ui/Button";
 import { Tag } from "~/components/ui/Tag";
 import { useMediaQuery, useReducedMotionPref } from "~/components/motion/hooks";
 
+/**
+ * The card thumbnail. The dashboard sits as a "screenshot" inset in a soft
+ * field, so the ±3% scroll drift and the hover scale never crop its edges.
+ */
 export function ProjectPreview({ project }: { project: Project }) {
-  return project.preview === "dashboard" ? <DashboardMock /> : <FinanceMock />;
+  if (project.preview === "finance") return <FinanceMock />;
+  return (
+    <div className="relative size-full bg-surface-soft">
+      <div className="absolute inset-x-[7%] top-[9%] -bottom-[8%] overflow-hidden rounded-t-[var(--radius-md)] border border-b-0 border-line-strong bg-surface shadow-[var(--shadow-2)]">
+        <DashboardMock />
+      </div>
+    </div>
+  );
 }
 
 /** The view-transition-name shared by the clicked card and the case study hero. */
@@ -48,7 +59,7 @@ export function ProjectCard({ project, headingLevel = "h3" }: { project: Project
         <div className="relative aspect-[4/3] overflow-hidden" role="img" aria-label={t.projects.previewAlt.replace("{title}", title)}>
           {/* 3% overscan above and below, so the ±3% scroll drift never shows an edge. */}
           <m.div
-            className={cn("absolute inset-x-0 -top-[3%] h-[106%]", project.preview === "finance" ? "bg-surface-soft" : "bg-surface")}
+            className="absolute inset-x-0 -top-[3%] h-[106%] bg-surface-soft"
             style={desktop && !reduce ? { y } : undefined}
           >
             <div className="absolute inset-x-0 top-[2.83%] bottom-[2.83%] transition-transform duration-200 ease-(--ease-out) group-hover:scale-[1.025] group-has-[a:focus-visible]:scale-[1.025] motion-reduce:transform-none">

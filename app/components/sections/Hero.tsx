@@ -9,6 +9,13 @@ import { useMediaQuery, useParallax } from "~/components/motion/hooks";
 /** The figure names its layers in Uzbek; Russian pages translate the read-out. */
 const RU_READ = { "01 · tuzilma": "01 · структура", "02 · dizayn": "02 · дизайн", "03 · natija": "03 · результат" } as const;
 
+/**
+ * Width of the longest h1 line in em, per language (measured in Chrome). On
+ * desktop the h1 shrinks below the display size only when that line would not
+ * fit its column, so the three lines never wrap or run into the figure.
+ */
+const FIT = { uz: 8.4, ru: 10.35 } as const;
+
 const delay = (ms: number) => ({ "--d": `${ms}ms` }) as CSSProperties;
 
 /**
@@ -62,7 +69,7 @@ export function Hero() {
     <section ref={ref} aria-labelledby="hero-title" className="relative">
       <div className="container-site">
         <div className="grid-site items-center gap-y-12 pt-[clamp(40px,7vw,96px)] pb-[clamp(56px,8vw,104px)] lg:min-h-[calc(86svh-var(--header-h))]">
-          <div className="col-span-4 md:col-span-8 lg:col-span-7">
+          <div className="hero-fit col-span-4 md:col-span-8 lg:col-span-7">
             <p className="hero-in t-label flex items-center gap-3 text-ink-2" style={delay(0)}>
               <HairlineNode state="active" />
               <Hairline tone="strong" length={24} />
@@ -71,7 +78,7 @@ export function Hero() {
             <h1
               id="hero-title"
               className="hero-in-solid t-display relative z-10 mt-7 md:mt-8 lg:-mr-[4.5rem] [&>span]:block lg:[&>span]:whitespace-nowrap"
-              style={delay(60)}
+              style={{ ...delay(60), ["--fit" as string]: FIT[locale] }}
             >
               <span>{t.hero.line1}</span>
               <span>{t.hero.line2}</span>

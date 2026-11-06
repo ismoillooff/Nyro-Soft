@@ -320,6 +320,17 @@
   }
 }
 
+/* ─── Hero h1: keep three lines on desktop in every language ────────────── */
+@media (min-width: 1024px) {
+  .hero-fit {
+    container-type: inline-size;
+  }
+  .hero-fit h1 {
+    /* 4.5rem: the h1 may reach into the gutter (lg:-mr-[4.5rem]). */
+    font-size: min(clamp(2.5rem, 1.35rem + 4.9vw, 5.5rem), calc((100cqi + 4.5rem) / var(--fit, 8.4)));
+  }
+}
+
 /* ─── Hairline figures (@lucasmarkes/hairline and the vendored N) ───────── */
 .hl-figure {
   --hairline-hi: #2659ef;

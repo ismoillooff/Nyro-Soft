@@ -1,0 +1,129 @@
+/**
+ * Nyro: the studio's N, built as three thin plates stacked over one another.
+ * The bottom plate is the structure, drawn in dashes; the middle one is the
+ * design; the top one is the result. At rest the stack stands slightly open,
+ * unevenly, and the result's front edge is the one bright line. Moving across
+ * opens the gap between the plates on a spring, outwards from the middle one;
+ * moving up and down picks a plate, which takes the bright edge while the
+ * plates above it lift clear, staggered out from it. The slider is the widest
+ * gap.
+ *
+ * The pattern: scrub and pick. A spring for the gap, tweens for the choice,
+ * and a pick made from the target pose without the lifts, so a plate lifting
+ * never moves the band under a pointer held still.
+ */
+const {
+  Cam, clamp, fillet, fit, lerp, poly, proj,
+  spring, stepS, tdone, tset, tval, tween, disposer, mk, pointer, register,
+} = HL;
+
+// The mark in its own plane: a to the right, b away from the viewer. Stroke SW, plate thickness T.
+const W = 100, H = 132, SW = 29, T = 3, K = SW / (W - SW);
+const OUT = [[0, 0], [SW, 0], [SW, H * (1 - K)], [W - SW, 0], [W, 0], [W, H], [W - SW, H], [W - SW, H * K], [SW, H], [0, H]];
+const RAD = [1.6, 1.2, 0.8, 1.2, 1.6, 1.6, 1.2, 0.8, 1.2, 1.6];
+// Each plate's height in gaps, from the middle plate: uneven, so rest is not three equal slices,
+// and centred on the middle, so the stack opens both ways and stays in the frame's middle.
+const AT = [-0.9, 0, 1.1];
+const REST = 16, GMIN = 9, GTOP = 30, LIFT = 8, OPEN = [0, 6, 12], STEP = 40;
+const NAMES = ["01 · tuzilma", "02 · dizayn", "03 · natija"];
+const SQ = Math.SQRT1_2;
+
+function mount({ stage, svg, read }, value, opts = {}) {
+  const bag = disposer();
+  let gmax = value, act = -1, over = null;
+
+  // The mark lies turned an eighth so it faces the viewer; the camera is fitted
+  // to the stack at the slider's far end with the plates above a pick lifted.
+  const C = Cam(45, 0.5, 2.3);
+  const world = (q, z) => { const u = q[0] - W / 2, v = q[1] - H / 2; return [(u - v) * SQ, (-u - v) * SQ, z]; };
+  const ends = [AT[0] * GTOP, AT[2] * GTOP + LIFT];
+  fit(C, [[0, 0], [W, 0], [W, H], [0, H]].flatMap((q) => ends.map((e) => world(q, e))), 200, 166);
+  const P = proj(C), at = (q, z) => P(...world(q, z));
+
+  const face = fillet(OUT, RAD);
+  const g = mk("g", {}, svg);
+  // Back to front: the lowest plate first, so each plate covers the ones under it;
+  // a plate's thickness is painted before its face, so only its front shows.
+  const L = AT.map((_, i) => {
+    const grp = mk("g", {}, g);
+    const thick = i > 0 ? mk("path", { class: i === 2 ? "hi" : "lo" }, grp) : null;
+    const sil = mk("path", { class: i === 0 ? "sil dash" : "sil" }, grp);
+    return { thick, sil, lift: tween(opts.enter === false ? 0 : OPEN[i]), drawn: NaN };
+  });
+
+  const gap = spring(REST, { eps: 0.02 });
+  const z = (i, g0, now) => AT[i] * g0 + tval(L[i].lift, now);
+
+  function draw(i, zi) {
+    const l = L[i];
+    if (zi === l.drawn) return;
+    l.drawn = zi;
+    if (l.thick) l.thick.setAttribute("d", poly(face.map((q) => at(q, zi - T))));
+    l.sil.setAttribute("d", poly(face.map((q) => at(q, zi))));
+  }
+
+  const B = register(stage, (dt, now) => {
+    let moving = stepS(gap, dt);
+    L.forEach((l, i) => { draw(i, z(i, gap.x, now)); if (!tdone(l.lift, now)) moving = true; });
+    return moving;
+  });
+  bag.add(B.unregister);
+
+  // The stack settles from slightly open, the top plate first.
+  const now0 = performance.now();
+  L.forEach((l, i) => tset(l.lift, 0, now0, Math.abs(i - 2) * STEP));
+  B.wake();
+
+  // Rule 01: the pick reads the gap's target and the plates without their lifts,
+  // and the target depends on x alone, so the band under the pointer holds still.
+  const x0 = at([0, 0], 0)[0], x1 = at([W, 0], 0)[0];
+  function nearest(y) {
+    let best = 0, d = Infinity;
+    AT.forEach((a, i) => { const e = Math.abs(at([W / 2, H / 2], a * gap.t)[1] - y); if (e < d) { d = e; best = i; } });
+    return best;
+  }
+
+  /** Picks plate a (-1 lets go). The plates above it lift clear, staggered out from it. */
+  function choose(a) {
+    if (a === act) return;
+    const now = performance.now(), from = a >= 0 ? a : act;
+    act = a;
+    L.forEach((l, i) => {
+      tset(l.lift, a >= 0 && i > a ? LIFT : 0, now, Math.abs(i - from) * STEP);
+      l.sil.classList.toggle("hi", i === a);
+    });
+    // the rest mark gives the bright up to what the pointer chose
+    L[2].thick.classList.toggle("hi", a < 0);
+    L[2].thick.classList.toggle("lo", a >= 0);
+    read.textContent = a < 0 ? "rest" : NAMES[a];
+  }
+
+  function aim() {
+    if (over) {
+      gap.t = lerp(GMIN, gmax, clamp((over[0] - x0) / (x1 - x0), 0, 1));
+      choose(nearest(over[1]));
+    } else { gap.t = REST; choose(-1); }
+    B.wake();
+  }
+
+  bag.add(pointer(stage, {
+    move: (p) => { over = p; aim(); },
+    leave: () => { over = null; aim(); },
+  }));
+  bag.add(() => svg.replaceChildren());
+  read.textContent = "rest";
+
+  return {
+    set: (v) => { gmax = clamp(v, GMIN, GTOP); aim(); },
+    destroy: bag.dispose,
+  };
+}
+
+hairline({
+  name: "nyro",
+  means: "The Nyro N as three plates, structure, design and result: moving across opens the gap, moving down picks a plate.",
+  rules: [1, 2, 4, 8],
+  range: [18, 24, 30],
+  tour: [[280, 128], [200, 180], [120, 215], null],
+  mount,
+});

@@ -1,0 +1,12 @@
+node_modules
+/build
+/.react-router
+.env
+.env.*
+!.env.example
+/test-results
+/playwright-report
+/figures/*.png
+/figures/hairline-*.html
+/.tmp-*
+/tests/unit/*-tmp.test.ts

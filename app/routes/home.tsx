@@ -1,3 +1,4 @@
+import { lazy, Suspense } from "react";
 import type { Route } from "./+types/home";
 import { faq } from "~/content/faq";
 import { railSections } from "~/content/sections";
@@ -6,7 +7,6 @@ import { uz } from "~/i18n/uz";
 import { faqLd, organizationLd, seo, websiteLd } from "~/lib/seo";
 import { SectionRail } from "~/components/hairline/SectionRail";
 import { useActiveSection } from "~/components/motion/hooks";
-import { Brief } from "~/components/sections/Brief";
 import { Deliverables } from "~/components/sections/Deliverables";
 import { Demo } from "~/components/sections/Demo";
 import { Faq } from "~/components/sections/Faq";
@@ -32,6 +32,13 @@ export const meta: Route.MetaFunction = () =>
 
 const RAIL_IDS = railSections.map((s) => s.id);
 
+/**
+ * The brief is its own chunk. Prerendering resolves it, so the static HTML
+ * holds the full section; in the browser the chunk loads while that HTML is
+ * already on screen (no layout shift, nothing hidden).
+ */
+const Brief = lazy(() => import("~/components/sections/Brief").then((m) => ({ default: m.Brief })));
+
 export default function Home() {
   useActiveSection(RAIL_IDS);
 
@@ -48,7 +55,9 @@ export default function Home() {
       <Team />
       <Support />
       <Faq />
-      <Brief />
+      <Suspense fallback={<section id="brif" aria-label="Brif" className="section-y min-h-[880px]" />}>
+        <Brief />
+      </Suspense>
     </>
   );
 }

@@ -89,6 +89,14 @@
   --line-accent: rgba(38, 89, 239, 0.55);
   --selection: #dce7ff;
 
+  /* "Build" animation agents (app/components/build) */
+  --agent-1: #2659ef;
+  --agent-2: #e5484d;
+  --agent-3: #12a594;
+  --agent-4: #8e4ec6;
+  --agent-5: #f76b15;
+  --agent-6: #0090ff;
+
   --shadow-1: 0 1px 2px rgba(23, 27, 36, 0.04);
   --shadow-2: 0 12px 32px -16px rgba(23, 27, 36, 0.14);
 

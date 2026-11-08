@@ -218,6 +218,15 @@ export const uz = {
     home: "Bosh sahifaga qaytish",
     figureLabel: "Rozetka va poldagi vilka: ulanmagan",
   },
+  build: {
+    panel: "Sahifa qurilmoqda",
+    agents: "{n} agent",
+    layers: "{done} / {total} qatlam",
+    speed: "Tezlikni almashtirish",
+    close: "Animatsiyani yopish",
+    replay: "Qayta qurish",
+    done: "Tayyor",
+  },
   error: {
     title: "Kutilmagan xatolik",
     text: "Sahifani ko‘rsatishda xatolik yuz berdi. Sahifani yangilab ko‘ring.",

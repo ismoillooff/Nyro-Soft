@@ -2,6 +2,7 @@ import fontUrl from "@fontsource-variable/geist/files/geist-latin-wght-normal.wo
 import type { ReactNode } from "react";
 import { isRouteErrorResponse, Links, Meta, Outlet, Scripts, ScrollRestoration, useLocation } from "react-router";
 import type { Route } from "./+types/root";
+import { BuildController } from "./components/build/BuildController";
 import { Footer } from "./components/layout/Footer";
 import { Header } from "./components/layout/Header";
 import { MotionProvider } from "./components/motion/MotionProvider";
@@ -65,6 +66,7 @@ function Shell({ children }: { children: ReactNode }) {
             {children}
           </main>
           <Footer />
+          <BuildController />
         </div>
       </MotionProvider>
     </I18nProvider>

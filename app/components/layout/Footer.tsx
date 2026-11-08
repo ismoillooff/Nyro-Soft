@@ -3,6 +3,7 @@ import { services } from "~/content/services";
 import { site } from "~/content/site";
 import { useI18n } from "~/i18n";
 import { Arrow } from "~/components/ui/Button";
+import { BuildReplayButton } from "~/components/build/BuildController";
 import { Hairline } from "~/components/hairline/Hairline";
 import { Wordmark } from "./Logo";
 
@@ -80,10 +81,13 @@ export function Footer() {
         <Hairline />
         <div className="flex items-center justify-between py-5 text-[0.875rem] text-ink-3">
           <p className="tabular">© {__BUILD_YEAR__} Nyro Soft</p>
+          <div className="flex items-center gap-6">
+          <BuildReplayButton />
           <a href="#top" className="group/btn inline-flex min-h-11 items-center gap-1.5 hover:text-ink">
             {t.footer.toTop}
             <Arrow kind="up" />
           </a>
+          </div>
         </div>
       </div>
     </footer>

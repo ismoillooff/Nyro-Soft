@@ -154,6 +154,10 @@ Uzbek (Latin) is the source and lives at the root (`/`, `/xizmatlar/…`); Russi
 - Cyrillic font subsets are declared with `unicode-range`, so Uzbek pages never download them.
 - The product mock-ups and the working "Natija" sample keep Uzbek UI text on both languages (they depict a product for the Uzbek market).
 
+## Build animation
+
+On the first visit of each page in a session, a swarm of agent cursors rebuilds the page: the first view right away, then every section as it scrolls in (outline drawn with `stroke-dashoffset`, a "W × H" label, the element fading back in). Scroll reveals are handed to it, with a fallback so content is never left hidden. "Qayta qurish" in the footer replays the current view; × or Esc turns it off for the session. It never runs under `prefers-reduced-motion` and loads as its own chunk. Code: `app/components/build` (`AUTO_PLAY` in `mode.ts` keeps only the replay button).
+
 ## Accessibility and motion
 
 WCAG 2.2 AA target: skip link, one `h1` per page, landmarks, visible `:focus-visible`, native `<dialog>` menu, WAI-ARIA tabs and disclosures, labelled form errors with focus management, 44 px touch targets. Every animation has a `prefers-reduced-motion` path: no reveals, parallax, beams, marquee loop (static wrap), sticky process or figure autoplay. Content is fully visible in the prerendered HTML without JavaScript.

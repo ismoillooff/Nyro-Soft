@@ -1,5 +1,6 @@
 import { useAnimate, useInView } from "motion/react";
 import { useEffect, useRef, type ElementType, type ReactNode } from "react";
+import { CLAIMED_ATTR, PENDING_ATTR, REVEAL_FALLBACK_MS, buildPlannedFor } from "~/components/build/mode";
 import { cappedDelay, dist, dur, ease, stagger } from "~/motion/tokens";
 import { prefersReducedMotion, useIsoLayoutEffect } from "./hooks";
 
@@ -10,9 +11,15 @@ function isBelowViewport(el: Element): boolean {
   return el.getBoundingClientRect().top >= window.innerHeight;
 }
 
-function hide(el: HTMLElement) {
+function hide(el: HTMLElement, handOff: boolean) {
   el.style.opacity = "0";
   el.style.transform = `translate3d(0, ${dist.reveal}px, 0)`;
+  if (handOff) el.setAttribute(PENDING_ATTR, "");
+}
+
+/** Still waiting for us: hidden and not taken over by the build engine. */
+function stillOurs(el: HTMLElement): boolean {
+  return !el.hasAttribute(CLAIMED_ATTR) && el.style.opacity === "0";
 }
 
 interface RevealProps {
@@ -28,23 +35,39 @@ interface RevealProps {
  * opacity). After hydration, an element already on screen stays as it is; one
  * below the fold is hidden at once and fades/rises in a single time when it
  * enters. Reduced motion: nothing happens.
+ *
+ * On a page that is being "built" (components/build), the reveal is handed to
+ * the build engine, which shows the element while the agents draw it; if the
+ * engine has not claimed it shortly after it enters, it fades in here as usual.
  */
 export function Reveal({ as: Tag = "div", delay = 0, className, children, id }: RevealProps) {
   const [scope, animate] = useAnimate<HTMLElement>();
   const inView = useInView(scope, VIEW);
   const armed = useRef(false);
+  const handOff = useRef(false);
 
   useIsoLayoutEffect(() => {
     const el = scope.current;
     if (!el || prefersReducedMotion() || !isBelowViewport(el)) return;
-    hide(el);
+    handOff.current = buildPlannedFor(window.location.pathname);
+    hide(el, handOff.current);
     armed.current = true;
   }, []);
 
   useEffect(() => {
-    if (!inView || !armed.current || !scope.current) return;
-    armed.current = false;
-    animate(scope.current, { opacity: [0, 1], y: [dist.reveal, 0] }, { duration: dur.reveal, ease: ease.out, delay });
+    const el = scope.current;
+    if (!inView || !armed.current || !el) return;
+    const show = () => {
+      armed.current = false;
+      el.removeAttribute(PENDING_ATTR);
+      animate(el, { opacity: [0, 1], y: [dist.reveal, 0] }, { duration: dur.reveal, ease: ease.out, delay });
+    };
+    if (!handOff.current) return show();
+    const timer = window.setTimeout(() => {
+      if (stillOurs(el)) show();
+      else armed.current = false;
+    }, REVEAL_FALLBACK_MS);
+    return () => window.clearTimeout(timer);
   }, [inView, animate, delay, scope]);
 
   return (
@@ -76,23 +99,30 @@ export function RevealGroup({
   const [scope, animate] = useAnimate<HTMLElement>();
   const inView = useInView(scope, VIEW);
   const armed = useRef<HTMLElement[]>([]);
+  const handOff = useRef(false);
 
   useIsoLayoutEffect(() => {
     const root = scope.current;
     if (!root || prefersReducedMotion()) return;
+    handOff.current = buildPlannedFor(window.location.pathname);
     const items = Array.from(root.querySelectorAll<HTMLElement>(itemSelector)).filter(isBelowViewport);
-    items.forEach(hide);
+    items.forEach((el) => hide(el, handOff.current));
     armed.current = items;
   }, [itemSelector]);
 
   useEffect(() => {
-    const items = armed.current;
-    if (!inView || items.length === 0) return;
-    armed.current = [];
+    if (!inView || armed.current.length === 0) return;
     const s = stepMobile !== undefined && window.innerWidth < 768 ? stepMobile : step;
-    items.forEach((el, i) => {
-      animate(el, { opacity: [0, 1], y: [dist.reveal, 0] }, { duration: dur.reveal, ease: ease.out, delay: cappedDelay(i, s) });
-    });
+    const show = (items: HTMLElement[]) => {
+      armed.current = [];
+      items.forEach((el, i) => {
+        el.removeAttribute(PENDING_ATTR);
+        animate(el, { opacity: [0, 1], y: [dist.reveal, 0] }, { duration: dur.reveal, ease: ease.out, delay: cappedDelay(i, s) });
+      });
+    };
+    if (!handOff.current) return show(armed.current);
+    const timer = window.setTimeout(() => show(armed.current.filter(stillOurs)), REVEAL_FALLBACK_MS);
+    return () => window.clearTimeout(timer);
   }, [inView, animate, step, stepMobile, scope]);
 
   return (

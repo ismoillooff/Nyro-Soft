@@ -41,3 +41,50 @@ export const briefContactMethods: readonly BriefOption[] = [
   { value: "phone", label: { uz: "Telefon", ru: "Телефон" } },
   { value: "email", label: { uz: "Email", ru: "Email" } },
 ];
+
+/* ─── "What to prepare" before filling in the brief ───────────────────────── */
+
+export interface BriefPrepItem {
+  readonly id: string;
+  readonly title: Localized;
+  readonly hint: Localized;
+  /** where it goes in the brief */
+  readonly field: "about" | "services" | "stage" | "link" | "budget" | "timeline";
+}
+
+export const briefPrep: readonly BriefPrepItem[] = [
+  {
+    id: "goal",
+    title: { uz: "Loyiha maqsadi", ru: "Цель проекта" },
+    hint: { uz: "Qaysi muammoni hal qilmoqchisiz yoki nimaga erishmoqchisiz.", ru: "Какую задачу хотите решить или чего хотите достичь." },
+    field: "about",
+  },
+  {
+    id: "users",
+    title: { uz: "Asosiy foydalanuvchilar", ru: "Основные пользователи" },
+    hint: { uz: "Mahsulotdan kim va qanday vaziyatda foydalanadi.", ru: "Кто и в какой ситуации будет пользоваться продуктом." },
+    field: "about",
+  },
+  {
+    id: "features",
+    title: { uz: "Ustuvor funksiyalar", ru: "Приоритетные функции" },
+    hint: { uz: "Birinchi versiyada albatta bo‘lishi kerak bo‘lgan narsalar.", ru: "То, что обязательно должно быть в первой версии." },
+    field: "about",
+  },
+  {
+    id: "materials",
+    title: { uz: "Mavjud sayt yoki materiallar", ru: "Действующий сайт или материалы" },
+    hint: { uz: "Sayt, dizayn yoki hujjat havolasi — agar bo‘lsa.", ru: "Ссылка на сайт, дизайн или документ — если есть." },
+    field: "link",
+  },
+  {
+    id: "constraints",
+    title: { uz: "Muddat va budjet cheklovlari", ru: "Ограничения по срокам и бюджету" },
+    hint: { uz: "Taxminiy budjet va kutilayotgan muddat, oraliq ko‘rinishida bo‘lsa ham.", ru: "Примерный бюджет и ожидаемый срок, пусть даже в виде диапазона." },
+    field: "budget",
+  },
+];
+
+export const briefPrepNote: Localized = {
+  uz: "Hammasi aniq bo‘lishi shart emas. Brifda «Hali bilmayman» va «Hali aniq emas» variantlari bor — tafsilotlarni tahlil bosqichida birga aniqlashtiramiz.", ru: "Не всё должно быть ясно заранее. В брифе есть варианты «Пока не знаю» и «Пока не определено» — детали уточним вместе на этапе анализа.",
+};

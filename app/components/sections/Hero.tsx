@@ -1,6 +1,8 @@
 import { m } from "motion/react";
-import { useRef, type CSSProperties } from "react";
+import { useCallback, useRef, useState, type CSSProperties } from "react";
 import { useI18n } from "~/i18n";
+import { cn } from "~/lib/cn";
+import { parallax } from "~/motion/tokens";
 import { ButtonLink } from "~/components/ui/Button";
 import { Hairline, HairlineNode, MarkedRule } from "~/components/hairline/Hairline";
 import { NyroMark } from "~/components/hairline/NyroMark";
@@ -16,12 +18,14 @@ const RU_READ = { "01 · tuzilma": "01 · структура", "02 · dizayn": "
  */
 const FIT = { uz: 8.4, ru: 10.35 } as const;
 
+/** Entrance order (ms): label → three headline lines → lead → CTA → the N settles → its legend. */
+const AT = { label: 0, lines: [60, 110, 160], lead: 210, cta: 260, legend: 520 } as const;
+
 const delay = (ms: number) => ({ "--d": `${ms}ms` }) as CSSProperties;
 
 /**
  * A faint floor grid in perspective, only behind the N (right column). Drawn
- * at 1 CSS px (0.5px on 2x screens), --line at ~50%, faded out by a radial
- * mask. Decorative.
+ * at 1 CSS px, --line at ~50%, faded out by a radial mask. Decorative.
  */
 function PerspectiveGrid() {
   const W = 480;
@@ -36,7 +40,7 @@ function PerspectiveGrid() {
       focusable="false"
       viewBox={`0 0 ${W} ${H}`}
       preserveAspectRatio="xMidYMid slice"
-      className="hero-grid pointer-events-none absolute inset-0 size-full"
+      className="pointer-events-none absolute inset-0 size-full"
       style={{
         maskImage: "radial-gradient(closest-side at 50% 58%, #000 30%, transparent 100%)",
         WebkitMaskImage: "radial-gradient(closest-side at 50% 58%, #000 30%, transparent 100%)",
@@ -47,7 +51,6 @@ function PerspectiveGrid() {
           <line key={`r${y}`} x1="0" x2={W} y1={y + 0.5} y2={y + 0.5} vectorEffect="non-scaling-stroke" />
         ))}
         {cols.map((dx) => {
-          // Lines run from the vanishing point down through the floor.
           const xBottom = vx + dx * 2.2;
           const t = (rows[0]! - vy) / (H - vy);
           const xTop = vx + (xBottom - vx) * t;
@@ -58,36 +61,55 @@ function PerspectiveGrid() {
   );
 }
 
+/**
+ * The hero. The h1, the lead and the buttons are in the prerendered HTML and
+ * only rise 8px on entry (never transparent), so they are readable before
+ * any JavaScript. The layered N explains itself with a three-step legend —
+ * structure → design → result — that follows the figure's read-out as the
+ * pointer (or the idle tour) moves through its plates.
+ */
 export function Hero() {
   const { t, locale } = useI18n();
   const ref = useRef<HTMLElement>(null);
   const desktop = useMediaQuery("(min-width: 1024px)");
-  const gridY = useParallax(ref, 24);
-  const markY = useParallax(ref, 32);
+  const gridY = useParallax(ref, parallax.grid);
+  const markY = useParallax(ref, parallax.figure);
+  const [layer, setLayer] = useState(-1);
+  const onRead = useCallback((text: string) => {
+    const n = Number.parseInt(text, 10);
+    setLayer(Number.isFinite(n) ? n - 1 : -1);
+  }, []);
+  const layers = [t.hero.layerStructure, t.hero.layerDesign, t.hero.layerResult];
 
   return (
-    <section ref={ref} aria-labelledby="hero-title" className="relative">
+    <section ref={ref} aria-labelledby="hero-title" data-build-hero="" className="relative">
       <div className="container-site">
-        <div className="grid-site items-center gap-y-12 pt-[clamp(40px,7vw,96px)] pb-[clamp(56px,8vw,104px)] lg:min-h-[calc(86svh-var(--header-h))]">
+        <div className="grid-site items-center gap-y-8 pt-[clamp(28px,6vw,88px)] pb-[clamp(48px,7vw,96px)] md:gap-y-12 lg:min-h-[calc(84svh-var(--header-h))]">
           <div className="hero-fit col-span-4 md:col-span-8 lg:col-span-7">
-            <p className="hero-in t-label flex items-center gap-3 text-ink-2" style={delay(0)}>
+            <p className="hero-in t-label flex items-center gap-3 text-ink-2" style={delay(AT.label)}>
               <HairlineNode state="active" />
               <Hairline tone="strong" length={24} />
               <span>{t.hero.label}</span>
             </p>
             <h1
               id="hero-title"
-              className="hero-in-solid t-display relative z-10 mt-7 md:mt-8 lg:-mr-[4.5rem] [&>span]:block lg:[&>span]:whitespace-nowrap"
-              style={{ ...delay(60), ["--fit" as string]: FIT[locale] }}
+              className="t-display relative z-10 mt-6 md:mt-8 lg:-mr-[4.5rem] [&>span]:block lg:[&>span]:whitespace-nowrap"
+              style={{ ["--fit" as string]: FIT[locale] }}
             >
-              <span>{t.hero.line1}</span>
-              <span>{t.hero.line2}</span>
-              <span className="text-accent">{t.hero.line3}</span>
+              <span className="hero-in-solid" style={delay(AT.lines[0])}>
+                {t.hero.line1}
+              </span>
+              <span className="hero-in-solid" style={delay(AT.lines[1])}>
+                {t.hero.line2}
+              </span>
+              <span className="hero-in-solid text-accent" style={delay(AT.lines[2])}>
+                {t.hero.line3}
+              </span>
             </h1>
-            <p className="hero-in t-lead mt-7 max-w-[44ch] text-ink-2 md:mt-8" style={delay(120)}>
+            <p className="hero-in-solid t-lead mt-6 max-w-[44ch] text-ink-2 md:mt-8" style={delay(AT.lead)}>
               {t.hero.lead}
             </p>
-            <div className="hero-in mt-9 flex flex-col gap-3 sm:flex-row sm:flex-wrap" style={delay(180)}>
+            <div className="hero-in-solid mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap md:mt-9" style={delay(AT.cta)}>
               <ButtonLink to="#brif" arrow="up-right">
                 {t.hero.primary}
               </ButtonLink>
@@ -107,12 +129,31 @@ export function Hero() {
             </m.div>
             <span
               aria-hidden="true"
-              className="pointer-events-none absolute inset-[8%] rounded-full"
+              className="pointer-events-none absolute inset-[10%] rounded-full"
               style={{ background: "radial-gradient(closest-side, var(--surface-soft), transparent)" }}
             />
-            <m.div className="relative mx-auto w-full max-w-[320px] lg:max-w-none" style={desktop ? { y: markY } : undefined}>
-              <NyroMark label={t.hero.figureLabel} readMap={locale === "ru" ? RU_READ : undefined} />
+            <m.div
+              data-hero-n=""
+              className="relative mx-auto w-full max-w-[232px] sm:max-w-[280px] md:max-w-[320px] lg:max-w-none"
+              style={desktop ? { y: markY } : undefined}
+            >
+              <NyroMark label={t.hero.figureLabel} readMap={locale === "ru" ? RU_READ : undefined} onRead={onRead} showRead={false} />
             </m.div>
+            <ol
+              aria-label={t.hero.layersLabel}
+              className="hero-in t-label relative mx-auto mt-3 flex w-fit items-center gap-2 text-ink-3 md:mt-5 md:gap-3"
+              style={delay(AT.legend)}
+            >
+              {layers.map((name, i) => (
+                <li key={name} className="flex items-center gap-2 md:gap-3">
+                  {i > 0 && <Hairline tone="strong" length={16} className="md:w-6!" />}
+                  <span className={cn("flex items-center gap-1.5 transition-colors duration-(--dur-micro)", layer === i && "text-ink")}>
+                    <HairlineNode state={layer === i ? "active" : layer > i ? "done" : "idle"} />
+                    {name}
+                  </span>
+                </li>
+              ))}
+            </ol>
           </div>
         </div>
       </div>

@@ -9,15 +9,18 @@ export function Section({
   className,
   children,
   container = true,
+  compact = false,
 }: {
   id: string;
   titleId: string;
   className?: string;
   children: ReactNode;
   container?: boolean;
+  /** Shorter vertical rhythm for supporting bands (situations, technologies). */
+  compact?: boolean;
 }) {
   return (
-    <section id={id} aria-labelledby={titleId} className={cn("section-y relative", className)}>
+    <section id={id} aria-labelledby={titleId} className={cn(compact ? "py-[clamp(64px,8vw,112px)]" : "section-y", "relative", className)}>
       {container ? <div className="container-site">{children}</div> : children}
     </section>
   );

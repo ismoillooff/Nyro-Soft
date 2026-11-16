@@ -29,7 +29,7 @@ export function LanguageSwitch({ className }: { className?: string }) {
             lang={loc}
             aria-current={loc === locale ? "true" : undefined}
             className={cn(
-              "inline-flex min-h-11 min-w-9 items-center justify-center transition-colors duration-[180ms]",
+              "inline-flex min-h-11 min-w-9 items-center justify-center transition-colors duration-(--dur-micro)",
               loc === locale ? "text-ink" : "text-ink-3 hover:text-ink",
             )}
           >

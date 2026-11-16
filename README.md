@@ -71,11 +71,11 @@ app/
     hairline/            Hairline, HairlineFrame, CornerMarks, HairlineNode, HairlineBeam,
                          beam-scheduler, SectionRail, DrawnFrame, HairlineFigure, NyroMark
     motion/              MotionProvider, Reveal/RevealGroup, hooks (scroll progress, parallax, active section)
-    sections/            Hero, Projects, Services, TechMarquee, Demo, Process, Deliverables, Team, Support, Faq, Brief
+    sections/            Hero, Situations, Projects, Services, TechMarquee, Demo (4 modes), Process, Deliverables (+ support), Team (quality principles), Faq, Brief
     demo/                DashboardMock, FinanceMock, OrdersApp (the working "Natija" sample, own chunk)
     brief/               brief steps, progress, review, result states
     ui/                  Button, Tabs, Accordion, CompareSlider, Field, Chip, Tag
-  content/               typed content: services, projects, tech, team, faq, process, deliverables, support, principles, brief, site
+  content/               typed content: situations, services, projects, tech, team, faq, process, deliverables, support, principles, brief, site
   i18n/                  uz.ts (source of truth), ru.ts, index.tsx
   lib/                   seo.ts (meta, canonical, OG, JSON-LD), brief/ (types, validate, format, reducer, submitters)
   motion/                tokens.ts (durations, easing, springs), features.ts (domMax)
@@ -154,13 +154,17 @@ Uzbek (Latin) is the source and lives at the root (`/`, `/xizmatlar/…`); Russi
 - Cyrillic font subsets are declared with `unicode-range`, so Uzbek pages never download them.
 - The product mock-ups and the working "Natija" sample keep Uzbek UI text on both languages (they depict a product for the Uzbek market).
 
-## Build animation
+## Motion system
 
-On the first visit of each page in a session, a swarm of agent cursors rebuilds the page: the first view right away, then every section as it scrolls in (outline drawn with `stroke-dashoffset`, a "W × H" label, the element fading back in). Scroll reveals are handed to it, with a fallback so content is never left hidden. "Qayta qurish" in the footer replays the current view; × or Esc turns it off for the session. It never runs under `prefers-reduced-motion` and loads as its own chunk. Code: `app/components/build` (`AUTO_PLAY` in `mode.ts` keeps only the replay button).
+All durations, curves, distances and stagger live in `app/motion/tokens.ts` and are mirrored as CSS custom properties in `app/styles/app.css` (`--dur-*`, `--ease-*`, `--dist-*`): press 140 ms, hover 160 ms, UI change 240 ms, reveal 450 ms, figure 700 ms, stagger 50 ms (capped at 250 ms), distance 8–16 px, parallax ≤ 24 px.
+
+- **Reveals** (`app/components/motion/reveal-controller.ts`): one IntersectionObserver for the page. Content is visible in the prerendered HTML; only elements entirely below the fold are hidden after hydration (measured after scroll restoration and hash scrolling). Items entering together cascade; items scrolled past appear at once; focus inside a hidden item shows it immediately; turning on reduced motion shows everything; unmounting clears the inline styles. Hidden items carry `data-reveal="hidden"`.
+- **Build animation** (`app/components/build`): decoration only — outlines and size labels on an overlay; it never dims, hides or hands over content. On the first visit of a page in a session it traces the hero (≤ 7 elements, ~1.5 s); wheel, touch, a key or a click ends it. The page is marked built only after the run has played. "Qayta qurish" in the footer replays the full current view; × or Esc turns it off for the session.
+- **Process** (`sections/Process.tsx`): pinned storyboard only where the screen is ≥ 1024 × 760 and motion is allowed (`pin:` variant); otherwise a readable vertical timeline.
 
 ## Accessibility and motion
 
-WCAG 2.2 AA target: skip link, one `h1` per page, landmarks, visible `:focus-visible`, native `<dialog>` menu, WAI-ARIA tabs and disclosures, labelled form errors with focus management, 44 px touch targets. Every animation has a `prefers-reduced-motion` path: no reveals, parallax, beams, marquee loop (static wrap), sticky process or figure autoplay. Content is fully visible in the prerendered HTML without JavaScript.
+WCAG 2.2 AA target: skip link, one `h1` per page, landmarks, visible `:focus-visible`, native `<dialog>` menu, WAI-ARIA tabs and disclosures, labelled form errors with focus management, 44 px touch targets. Every animation has a `prefers-reduced-motion` path: no reveals, parallax, beams, marquee loop (static wrap), pinned process, build animation or figure autoplay — also when the setting changes while the page is open. Content is fully visible in the prerendered HTML without JavaScript.
 
 ## Licenses
 

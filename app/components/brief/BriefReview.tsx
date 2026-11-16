@@ -41,7 +41,7 @@ function Block({
           type="button"
           onClick={() => onEdit(step)}
           aria-label={fmt(t.brief.editStep, { step: title })}
-          className="-mr-2 inline-flex min-h-11 items-center rounded-[var(--radius-sm)] px-2 text-[0.875rem] text-ink underline decoration-line-strong underline-offset-4 transition-colors duration-[180ms] hover:decoration-ink"
+          className="-mr-2 inline-flex min-h-11 items-center rounded-[var(--radius-sm)] px-2 text-[0.875rem] text-ink underline decoration-line-strong underline-offset-4 transition-colors duration-(--dur-micro) hover:decoration-ink"
         >
           {t.brief.edit}
         </button>

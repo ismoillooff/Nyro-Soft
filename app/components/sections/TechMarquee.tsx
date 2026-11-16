@@ -113,11 +113,11 @@ export function TechMarquee() {
   } as CSSProperties;
 
   return (
-    <Section id={meta.id} titleId="texnologiyalar-title" container={false}>
+    <Section id={meta.id} titleId="texnologiyalar-title" container={false} compact>
       <div className="container-site">
         <SectionHeading titleId="texnologiyalar-title" number={meta.number} label={l(meta.label)} title={t.tech.title} lead={t.tech.lead} />
       </div>
-      <div className="container-site mt-12 md:mt-16">
+      <div className="container-site mt-10 md:mt-12">
         <div className="relative border-y border-line-strong">
           <CornerMarks />
           <span aria-hidden="true" className="pointer-events-none absolute inset-x-0 -top-px h-px overflow-hidden">
@@ -132,7 +132,7 @@ export function TechMarquee() {
             data-ready={copies > 0 && setWidth > 0 ? "" : undefined}
             style={style}
           >
-            <div className="marquee-track flex w-max py-7 md:py-9">
+            <div className="marquee-track flex w-max py-6 md:py-7">
               <ul ref={listRef} aria-label={t.tech.listLabel} className="marquee-list flex shrink-0 items-center gap-12 pr-12">
                 {tech.map((item) => (
                   <Item key={item.id} item={item} />
@@ -154,7 +154,7 @@ export function TechMarquee() {
             aria-pressed={paused}
             onClick={() => setPaused((p) => !p)}
             className={cn(
-              "inline-flex size-11 items-center justify-center rounded-full border border-line text-ink-2 transition-colors duration-[180ms] hover:text-ink",
+              "inline-flex size-11 items-center justify-center rounded-full border border-line text-ink-2 transition-colors duration-(--dur-micro) hover:text-ink",
             )}
             aria-label={paused ? t.tech.play : t.tech.pause}
           >

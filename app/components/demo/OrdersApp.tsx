@@ -196,7 +196,7 @@ export default function OrdersApp() {
         </label>
       </div>
 
-      <div className="min-h-0 flex-1 overflow-auto px-4 pb-4 @[40rem]:px-6">
+      <div className="min-h-0 flex-1 overflow-auto overscroll-contain px-4 pb-4 @[40rem]:px-6">
         {visible.length === 0 ? (
           <p className="py-10 text-center text-ink-2">Mos buyurtma topilmadi.</p>
         ) : (

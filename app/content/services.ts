@@ -29,6 +29,11 @@ export interface Service {
   readonly related: readonly ProjectCategory[];
   /** Which brief option this service maps to. */
   readonly briefValue: string;
+  /** Home list, "problem → work → product" in one line each. */
+  readonly forWhom: Localized;
+  readonly task: Localized;
+  readonly work: Localized;
+  readonly outcome: Localized;
 }
 
 export const services: readonly Service[] = [
@@ -86,6 +91,10 @@ export const services: readonly Service[] = [
     ],
     related: ["web"],
     briefValue: "web",
+    forWhom: { uz: "Ishni jadval va chatlarda yuritayotgan kompaniyalar", ru: "Компаниям, которые ведут работу в таблицах и чатах" },
+    task: { uz: "Buyurtma, mijoz va hisobot ma’lumotlari turli joylarda tarqalgan.", ru: "Данные о заказах, клиентах и отчётах разбросаны по разным местам." },
+    work: { uz: "Tahlil, dizayn, frontend va backend, boshqaruv paneli, integratsiyalar va serverga joylash.", ru: "Анализ, дизайн, frontend и backend, панель управления, интеграции и размещение на сервере." },
+    outcome: { uz: "Jarayonlaringizga moslashgan, kengaytirish mumkin bo‘lgan veb tizim.", ru: "Веб-система под ваши процессы, которую можно расширять." },
   },
   {
     slug: "mobil-ilovalar",
@@ -139,6 +148,10 @@ export const services: readonly Service[] = [
     ],
     related: ["mobil"],
     briefValue: "mobil",
+    forWhom: { uz: "Mijozlari bilan doimiy aloqada bo‘lishi kerak bo‘lgan xizmatlar", ru: "Сервисам, которым нужна постоянная связь с клиентами" },
+    task: { uz: "Mijozlar faqat telefon orqali murojaat qiladi va yo‘qolib ketadi.", ru: "Клиенты обращаются только по телефону и теряются." },
+    work: { uz: "Ssenariylar va prototip, iOS va Android dizayni, ilova va server qismi.", ru: "Сценарии и прототип, дизайн для iOS и Android, приложение и серверная часть." },
+    outcome: { uz: "Do‘konlarga joylashga tayyorlangan iOS va Android ilovasi.", ru: "Приложение для iOS и Android, подготовленное к публикации в магазинах." },
   },
   {
     slug: "ui-ux-dizayn",
@@ -193,6 +206,10 @@ export const services: readonly Service[] = [
     ],
     related: ["web", "mobil"],
     briefValue: "dizayn",
+    forWhom: { uz: "Mahsulotini qayta ishlayotgan yoki dizayneri yo‘q jamoalar", ru: "Командам, которые перерабатывают продукт или работают без дизайнера" },
+    task: { uz: "Foydalanuvchilar kerakli funksiyani topa olmaydi, ekranlar turlicha ko‘rinadi.", ru: "Пользователи не находят нужную функцию, экраны выглядят по-разному." },
+    work: { uz: "Tahlil, tuzilma va wireframe’lar, yakuniy interfeys, prototip va dizayn tizimi.", ru: "Анализ, структура и wireframe-макеты, финальный интерфейс, прототип и дизайн-система." },
+    outcome: { uz: "Dasturlashga tayyor maketlar va dizayn tizimi.", ru: "Готовые к разработке макеты и дизайн-система." },
   },
   {
     slug: "biznesni-avtomatlashtirish",
@@ -246,6 +263,10 @@ export const services: readonly Service[] = [
     ],
     related: ["avtomatlashtirish"],
     briefValue: "avtomatlashtirish",
+    forWhom: { uz: "Hisobot va ma’lumotlarni qo‘lda yig‘adigan jamoalar", ru: "Командам, которые собирают отчёты и данные вручную" },
+    task: { uz: "Bir xil ma’lumot bir necha joyga qo‘lda kiritiladi.", ru: "Одни и те же данные вручную вносятся в несколько мест." },
+    work: { uz: "Jarayonlar tahlili, API integratsiyalari, avtomatik hisobotlar, Telegram botlar va bildirishnomalar.", ru: "Анализ процессов, API-интеграции, автоматические отчёты, Telegram-боты и уведомления." },
+    outcome: { uz: "Takrorlanuvchi ishni o‘z zimmasiga oladigan integratsiyalar, hisobotlar va bildirishnomalar.", ru: "Интеграции, отчёты и уведомления, которые берут на себя повторяющуюся работу." },
   },
 ];
 

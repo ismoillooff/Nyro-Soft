@@ -8,17 +8,24 @@ export interface FaqItem {
 
 export const faq: readonly FaqItem[] = [
   {
+    id: "hajm",
+    q: { uz: "Loyiha hajmi qanday aniqlanadi?", ru: "Как определяется объём проекта?" },
+    a: {
+      uz: "Tahlil bosqichida maqsad, foydalanuvchilar va cheklovlarni aniqlaymiz. Natija — kelishilgan talablar va ish rejasi; hajm aynan shular asosida belgilanadi.", ru: "На этапе анализа определяем цели, пользователей и ограничения. Результат — согласованные требования и план работ; объём определяется именно на их основе.",
+    },
+  },
+  {
+    id: "jarayon",
+    q: { uz: "Ish jarayoni qanday tashkil etiladi?", ru: "Как организована работа?" },
+    a: {
+      uz: "To‘rt bosqichda: tahlil, dizayn, dasturlash va ishga tushirish. Muhim qarorlar siz bilan muhokama qilinadi, oraliq natijalar muntazam ko‘rsatib boriladi. Muddat loyiha hajmiga bog‘liq va tahlildan so‘ng kelishiladi.", ru: "В четыре этапа: анализ, дизайн, разработка и запуск. Важные решения обсуждаем с вами, промежуточные результаты регулярно показываем. Сроки зависят от объёма проекта и согласуются после анализа.",
+    },
+  },
+  {
     id: "narx",
     q: { uz: "Loyiha narxi qanday hisoblanadi?", ru: "Как рассчитывается стоимость проекта?" },
     a: {
       uz: "Narx loyiha hajmi, funksiyalar, dizayn murakkabligi va integratsiyalarga bog‘liq. Brifingiz asosida talablarni aniqlashtiramiz va shundan keyin taklif tayyorlaymiz.", ru: "Стоимость зависит от объёма проекта, функций, сложности дизайна и интеграций. На основе вашего брифа мы уточняем требования и после этого готовим предложение.",
-    },
-  },
-  {
-    id: "muddat",
-    q: { uz: "Ish jarayoni qancha davom etadi?", ru: "Сколько длится работа?" },
-    a: {
-      uz: "Muddat loyiha hajmi va murakkabligiga bog‘liq. Tahlil bosqichidan so‘ng bosqichma-bosqich ish rejasini kelishib olamiz.", ru: "Сроки зависят от объёма и сложности проекта. После этапа анализа согласуем поэтапный план работ.",
     },
   },
   {
@@ -29,15 +36,24 @@ export const faq: readonly FaqItem[] = [
     },
   },
   {
-    id: "manba-kod",
-    q: { uz: "Manba kod kimga topshiriladi?", ru: "Кому передаётся исходный код?" },
-    a: { uz: "Manba kodni topshirish tartibi va unga bo‘lgan huquqlar shartnomada aniq belgilanadi.", ru: "Порядок передачи исходного кода и права на него чётко определяются договором." },
+    id: "materiallar",
+    q: { uz: "Qanday materiallar topshiriladi?", ru: "Какие материалы передаются?" },
+    a: {
+      uz: "Kelishilgan ekranlarning dizayn fayllari, manba kod va texnik hujjatlar (o‘rnatish, sozlash, asosiy arxitektura). Manba kodni topshirish tartibi va aniq tarkib shartnomada belgilanadi.", ru: "Файлы дизайна согласованных экранов, исходный код и техническая документация (установка, настройка, основная архитектура). Порядок передачи исходного кода и точный состав определяются договором.",
+    },
   },
   {
     id: "yordam",
-    q: { uz: "Loyiha topshirilgach yordam berasizmi?", ru: "Помогаете ли вы после сдачи проекта?" },
+    q: { uz: "Topshirilgandan keyingi yordam qanday kelishiladi?", ru: "Как согласуется поддержка после сдачи проекта?" },
     a: {
-      uz: "Ha, qo‘llab-quvvatlash xizmatini taklif qilamiz. Uning hajmi va shartlari loyiha bo‘yicha alohida kelishiladi.", ru: "Да, мы предлагаем услугу поддержки. Её объём и условия согласуются отдельно по каждому проекту.",
+      uz: "Qo‘llab-quvvatlashni alohida xizmat sifatida taklif qilamiz: monitoring, yangilanishlar va yangi funksiyalar qo‘shish. Uning hajmi, muddati va shartlari har bir loyiha bo‘yicha alohida kelishiladi.", ru: "Поддержку предлагаем отдельной услугой: мониторинг, обновления и добавление новых функций. Её объём, сроки и условия согласуются отдельно по каждому проекту.",
+    },
+  },
+  {
+    id: "boshlash",
+    q: { uz: "Boshlash uchun nima kerak?", ru: "Что нужно, чтобы начать?" },
+    a: {
+      uz: "Brifni to‘ldiring: loyiha haqida qisqacha, hozirgi holat, taxminiy budjet va muddat. Hammasi aniq bo‘lishi shart emas — noaniq joylarni tahlil bosqichida birga aniqlashtiramiz.", ru: "Заполните бриф: коротко о проекте, текущее состояние, примерный бюджет и сроки. Не всё должно быть ясно заранее — неясные моменты уточним вместе на этапе анализа.",
     },
   },
 ];

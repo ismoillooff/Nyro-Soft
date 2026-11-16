@@ -14,7 +14,7 @@ import { Hero } from "~/components/sections/Hero";
 import { Process } from "~/components/sections/Process";
 import { Projects } from "~/components/sections/Projects";
 import { Services } from "~/components/sections/Services";
-import { Support } from "~/components/sections/Support";
+import { Situations } from "~/components/sections/Situations";
 import { Team } from "~/components/sections/Team";
 import { TechMarquee } from "~/components/sections/TechMarquee";
 
@@ -45,6 +45,7 @@ export default function Home() {
     <>
       <SectionRail sections={railSections} />
       <Hero />
+      <Situations />
       <Projects />
       <Services />
       <TechMarquee />
@@ -52,7 +53,6 @@ export default function Home() {
       <Process />
       <Deliverables />
       <Team />
-      <Support />
       <Faq />
       <Suspense fallback={<section id="brif" aria-label="Brif" className="section-y min-h-[880px]" />}>
         <Brief />

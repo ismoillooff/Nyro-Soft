@@ -1,6 +1,7 @@
 import { FileCode2, FileText, PenTool, Rocket, type LucideIcon } from "lucide-react";
 import { deliverables, deliverablesNote, type DeliverableIcon } from "~/content/deliverables";
 import { homeSections } from "~/content/sections";
+import { supportItems, supportNote } from "~/content/support";
 import { useI18n } from "~/i18n";
 import { HairlineBeam } from "~/components/hairline/HairlineBeam";
 import { Section, SectionHeading } from "~/components/layout/Section";
@@ -36,15 +37,38 @@ export function DeliverablesGrid({ headingLevel = "h3" }: { headingLevel?: "h3" 
   );
 }
 
+/**
+ * "What you receive, and what happens next": the handover materials and the
+ * support after launch, as one connected block — the grid of deliverables,
+ * then the three support directions on the same frame, so support reads as
+ * the continuation of the handover rather than a separate promise.
+ */
 export function Deliverables() {
   const { t, l } = useI18n();
-  const meta = homeSections.deliverables;
+  const meta = homeSections.results;
   return (
     <Section id={meta.id} titleId="natijalar-title">
-      <SectionHeading titleId="natijalar-title" number={meta.number} label={l(meta.label)} title={t.deliverables.title} />
+      <SectionHeading titleId="natijalar-title" number={meta.number} label={l(meta.label)} title={t.results.title} lead={t.results.lead} />
       <div className="mt-12 md:mt-16">
+        <p className="t-label mb-3 text-ink-3">{t.results.handover}</p>
         <DeliverablesGrid />
-        <p className="mt-6 max-w-[64ch] text-[0.9375rem] text-ink-2">{l(deliverablesNote)}</p>
+        <p className="mt-4 max-w-[64ch] text-[0.9375rem] text-ink-2">{l(deliverablesNote)}</p>
+
+        <div className="relative mt-10 md:mt-12">
+          {/* The hand-off line: from the delivered materials down into the support that follows. */}
+          <span aria-hidden="true" className="absolute -top-10 left-6 h-10 w-px bg-line-strong md:-top-12 md:left-8 md:h-12" />
+          <p className="t-label mb-3 text-ink-3">{t.results.after}</p>
+          <RevealGroup as="ul" className="grid divide-y divide-line border-y border-line lg:grid-cols-3 lg:divide-x lg:divide-y-0">
+            {supportItems.map((item, i) => (
+              <li key={i} className="py-6 lg:px-8 lg:py-8 lg:first:pl-0 lg:last:pr-0">
+                <p className="t-label text-ink-3">{String(i + 1).padStart(2, "0")}</p>
+                <h3 className="t-h3 mt-4">{l(item.title)}</h3>
+                <p className="mt-2 max-w-[40ch] text-ink-2">{l(item.text)}</p>
+              </li>
+            ))}
+          </RevealGroup>
+          <p className="mt-4 max-w-[64ch] text-[0.9375rem] text-ink-2">{l(supportNote)}</p>
+        </div>
       </div>
     </Section>
   );

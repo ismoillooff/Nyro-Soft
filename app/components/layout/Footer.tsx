@@ -8,7 +8,7 @@ import { Hairline } from "~/components/hairline/Hairline";
 import { Wordmark } from "./Logo";
 
 const linkClass =
-  "inline-flex min-h-11 items-center text-ink-2 transition-colors duration-[180ms] hover:text-ink md:min-h-9";
+  "inline-flex min-h-11 items-center text-ink-2 transition-colors duration-(--dur-micro) hover:text-ink md:min-h-9";
 
 export function Footer() {
   const { t, l } = useI18n();

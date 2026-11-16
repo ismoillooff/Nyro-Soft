@@ -27,7 +27,7 @@ export function Chip({ type, id, name, value, checked, onChange, children, inval
       htmlFor={id}
       className={cn(
         "relative flex min-h-12 cursor-pointer select-none items-center gap-3 rounded-[var(--radius-md)] border bg-surface px-4 py-3",
-        "text-[0.9375rem] leading-5 text-ink transition-colors duration-[180ms] ease-(--ease-out)",
+        "text-[0.9375rem] leading-5 text-ink transition-colors duration-(--dur-micro) ease-(--ease-out)",
         "has-[input:focus-visible]:outline-2 has-[input:focus-visible]:outline-offset-2 has-[input:focus-visible]:outline-accent",
         checked ? "border-ink" : "border-line-strong hover:border-[color-mix(in_oklab,var(--ink)_40%,transparent)]",
         className,
@@ -47,7 +47,7 @@ export function Chip({ type, id, name, value, checked, onChange, children, inval
       <span
         aria-hidden="true"
         className={cn(
-          "grid size-[18px] shrink-0 place-items-center border transition-colors duration-[180ms]",
+          "grid size-[18px] shrink-0 place-items-center border transition-colors duration-(--dur-micro)",
           type === "radio" ? "rounded-full" : "rounded-[5px]",
           checked ? "border-accent bg-accent" : "border-line-strong bg-bg",
         )}

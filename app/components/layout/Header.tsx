@@ -50,14 +50,14 @@ export function Header() {
       <span
         aria-hidden="true"
         className={cn(
-          "pointer-events-none absolute inset-0 bg-[rgba(250,250,247,0.82)] backdrop-blur-[12px] transition-opacity duration-[180ms] ease-(--ease-out)",
+          "pointer-events-none absolute inset-0 bg-[rgba(250,250,247,0.82)] backdrop-blur-[12px] transition-opacity duration-(--dur-micro) ease-(--ease-out)",
           scrolled ? "opacity-100" : "opacity-0",
         )}
       />
       <span
         aria-hidden="true"
         className={cn(
-          "pointer-events-none absolute inset-x-0 bottom-0 h-px bg-line transition-opacity duration-[180ms] ease-(--ease-out)",
+          "pointer-events-none absolute inset-x-0 bottom-0 h-px bg-line transition-opacity duration-(--dur-micro) ease-(--ease-out)",
           scrolled ? "opacity-100" : "opacity-0",
         )}
       />
@@ -76,7 +76,7 @@ export function Header() {
                     to={item.to}
                     aria-current={isActive ? "true" : undefined}
                     className={cn(
-                      "relative inline-flex h-11 items-center px-3 text-[0.9375rem] transition-colors duration-[180ms]",
+                      "relative inline-flex h-11 items-center px-3 text-[0.9375rem] transition-colors duration-(--dur-micro)",
                       isActive ? "text-ink" : "text-ink-2 hover:text-ink",
                     )}
                   >

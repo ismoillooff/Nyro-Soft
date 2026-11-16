@@ -139,7 +139,7 @@ export function HairlineNode({ state = "idle", className }: { state?: NodeState;
       aria-hidden="true"
       data-state={state}
       className={cn(
-        "pointer-events-none relative inline-block size-[9px] shrink-0 rounded-full border transition-colors duration-[180ms] ease-(--ease-out)",
+        "pointer-events-none relative inline-block size-[9px] shrink-0 rounded-full border transition-colors duration-(--dur-micro) ease-(--ease-out)",
         state === "idle" && "border-line-strong bg-bg",
         state === "active" && "border-accent bg-bg",
         state === "done" && "border-ink bg-ink",
@@ -148,7 +148,7 @@ export function HairlineNode({ state = "idle", className }: { state?: NodeState;
     >
       <span
         className={cn(
-          "absolute inset-[2px] rounded-full transition-opacity duration-[180ms]",
+          "absolute inset-[2px] rounded-full transition-opacity duration-(--dur-micro)",
           state === "active" ? "bg-accent opacity-100" : "opacity-0",
         )}
       />

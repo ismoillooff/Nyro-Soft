@@ -19,7 +19,8 @@ const ARROWS: Record<ArrowKind, { Icon: LucideIcon; shift: string }> = {
 
 const BASE =
   "group/btn relative inline-flex select-none items-center justify-center gap-2 whitespace-nowrap font-medium " +
-  "transition-[background-color,border-color,color,text-decoration-color] duration-[180ms] ease-(--ease-out) " +
+  "transition-[background-color,border-color,color,text-decoration-color,scale] duration-(--dur-micro) ease-(--ease-out) " +
+  "active:scale-[0.98] active:duration-(--dur-press) motion-reduce:active:scale-100 " +
   "disabled:pointer-events-none disabled:opacity-50 aria-disabled:pointer-events-none aria-disabled:opacity-50";
 
 export type ButtonSize = "md" | "sm";
@@ -50,7 +51,7 @@ export function Arrow({ kind, className }: { kind: ArrowKind; className?: string
       aria-hidden="true"
       strokeWidth={1.5}
       className={cn(
-        "size-[1.05em] shrink-0 transition-transform duration-[180ms] ease-(--ease-out) motion-reduce:transition-none motion-reduce:transform-none",
+        "size-[1.05em] shrink-0 transition-transform duration-(--dur-micro) ease-(--ease-out) motion-reduce:transition-none motion-reduce:transform-none",
         shift,
         className,
       )}

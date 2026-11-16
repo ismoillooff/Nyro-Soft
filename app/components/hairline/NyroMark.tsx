@@ -11,6 +11,8 @@ export interface NyroMarkProps {
   onRead?: (text: string) => void;
   /** Optional translation of the read-out ("01 · tuzilma" → "01 · структура"). */
   readMap?: Readonly<Record<string, string>>;
+  /** Show the small read-out in the corner (off when the caller renders its own legend). */
+  showRead?: boolean;
 }
 
 /** How long the pointer must stay away from the hero before the figure walks itself (desktop). */
@@ -35,7 +37,7 @@ const STYLE = HAIRLINE_KERNEL_CSS + NYRO_ENTER_CSS;
  * plate. It walks itself (play) only in view, never under reduced motion, and
  * on hover devices only after the pointer has stayed away from the hero 4 s.
  */
-export function NyroMark({ label, className, onRead, readMap }: NyroMarkProps) {
+export function NyroMark({ label, className, onRead, readMap, showRead = true }: NyroMarkProps) {
   const readMapRef = useRef(readMap);
   readMapRef.current = readMap;
   const stageRef = useRef<HTMLDivElement>(null);
@@ -107,7 +109,7 @@ export function NyroMark({ label, className, onRead, readMap }: NyroMarkProps) {
       <span
         ref={readRef}
         aria-hidden="true"
-        className="t-label pointer-events-none absolute right-0 top-0 select-none text-ink-2"
+        className={cn("t-label pointer-events-none absolute right-0 top-0 select-none text-ink-2", !showRead && "hidden")}
       >
         N
       </span>

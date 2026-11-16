@@ -1,6 +1,6 @@
 import { useScroll, useSpring, useTransform, type MotionValue, type UseScrollOptions } from "motion/react";
 import { useEffect, useLayoutEffect, useRef, useSyncExternalStore, type RefObject } from "react";
-import { spring } from "~/motion/tokens";
+import { parallax, spring } from "~/motion/tokens";
 
 /** useLayoutEffect on the client, useEffect on the server (prerender runs in Node). */
 export const useIsoLayoutEffect = typeof window === "undefined" ? useEffect : useLayoutEffect;
@@ -64,21 +64,27 @@ export function usePageProgress(): MotionValue<number> {
   return reduce ? scrollYProgress : smooth;
 }
 
-/** Vertical parallax from 0 to −px as the target scrolls through `offset`. Capped at 32px; 0 under reduced motion. */
+/**
+ * Vertical parallax from 0 to −px as the target scrolls through `offset`.
+ * Capped at parallax.max (24px); 0 under reduced motion, also when the
+ * setting changes while the page is open (the value is reset at once).
+ */
 export function useParallax(
   ref: RefObject<HTMLElement | null>,
   px: number,
   offset: Offset = ["start start", "end start"],
 ): MotionValue<number> {
-  const distance = Math.min(Math.abs(px), 32) * Math.sign(px);
+  const distance = Math.min(Math.abs(px), parallax.max) * Math.sign(px);
   const { scrollYProgress } = useScroll({ target: ref, offset });
   const smooth = useSpring(scrollYProgress, followSpring);
   const reduce = useRef(true);
   const reduced = useReducedMotionPref();
+  const out = useTransform(smooth, (v) => (reduce.current ? 0 : -distance * v));
   useEffect(() => {
     reduce.current = prefersReducedMotion();
-  }, [reduced]);
-  return useTransform(smooth, (v) => (reduce.current ? 0 : -distance * v));
+    out.set(reduce.current ? 0 : -distance * smooth.get());
+  }, [reduced, out, smooth, distance]);
+  return out;
 }
 
 /* ─── Active section: one IntersectionObserver, one source of truth ─────── */

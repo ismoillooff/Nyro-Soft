@@ -4,12 +4,12 @@ import { useRef } from "react";
 import { LocaleLink as Link } from "~/components/ui/LocaleLink";
 import type { Route } from "./+types/project";
 import { getProject, projects, type Project } from "~/content/projects";
-import { i18nFor, localeFromPath, useI18n } from "~/i18n";
+import { fmt, i18nFor, localeFromPath, useI18n } from "~/i18n";
 import { absoluteUrl, breadcrumbLd, pageTitle, seo } from "~/lib/seo";
 import { cn } from "~/lib/cn";
 import { DashboardMock } from "~/components/demo/DashboardMock";
 import { FinanceMock, FinanceScreen, PhoneFrame } from "~/components/demo/FinanceMock";
-import { CornerMarks } from "~/components/hairline/Hairline";
+import { CornerMarks, HairlineNode } from "~/components/hairline/Hairline";
 import { Breadcrumb } from "~/components/layout/Breadcrumb";
 import { useActiveSection, useActiveSectionId, useParallax, useSectionProgress } from "~/components/motion/hooks";
 import { Reveal, RevealGroup } from "~/components/motion/Reveal";
@@ -53,7 +53,7 @@ export const meta: Route.MetaFunction = ({ params, location }) => {
   });
 };
 
-const SECTION_IDS = ["vazifa", "yechim", "funksiyalar", "korinishlar", "texnologiyalar", "foyda"] as const;
+const SECTION_IDS = ["vazifa", "foydalanuvchilar", "oqim", "qarorlar", "funksiyalar", "korinishlar", "yondashuv", "chegaralar", "keyingi-qadam"] as const;
 
 function Preview({ project }: { project: Project }) {
   return project.preview === "dashboard" ? <DashboardMock /> : <FinanceMock />;
@@ -107,7 +107,7 @@ function SectionIndex({ items, contentRef }: { items: readonly { id: string; lab
                 href={`#${item.id}`}
                 aria-current={active === item.id ? "true" : undefined}
                 className={cn(
-                  "flex min-h-10 items-center text-[0.9375rem] transition-colors duration-[180ms]",
+                  "flex min-h-10 items-center text-[0.9375rem] transition-colors duration-(--dur-micro)",
                   active === item.id ? "text-ink" : "text-ink-3 hover:text-ink",
                 )}
               >
@@ -133,6 +133,13 @@ function Block({ id, title, note, children }: { id: string; title: string; note?
   );
 }
 
+/**
+ * A concept case study: the product image right under the title, then the
+ * story in order — task, users, main flow, design decisions, the functions
+ * shown, screens, technical approach, the limits of the concept and what a
+ * real project would do next. Expected benefits are labelled as goals, not
+ * measured results; the concept notice sits right under the product image.
+ */
 export default function ProjectPage({ params }: Route.ComponentProps) {
   const { t, l } = useI18n();
   const contentRef = useRef<HTMLDivElement>(null);
@@ -143,13 +150,17 @@ export default function ProjectPage({ params }: Route.ComponentProps) {
   const index = projects.findIndex((p) => p.slug === project.slug);
   const prev = projects[(index - 1 + projects.length) % projects.length];
   const next = projects[(index + 1) % projects.length];
+  const cs = t.caseStudy;
   const labels: Record<(typeof SECTION_IDS)[number], string> = {
     vazifa: t.project.task,
-    yechim: t.project.solution,
-    funksiyalar: t.project.features,
+    foydalanuvchilar: cs.users,
+    oqim: cs.flow,
+    qarorlar: cs.decisions,
+    funksiyalar: cs.shown,
     korinishlar: t.project.screens,
-    texnologiyalar: t.project.stack,
-    foyda: t.project.benefits,
+    yondashuv: cs.approach,
+    chegaralar: cs.limits,
+    "keyingi-qadam": cs.nextStep,
   };
 
   return (
@@ -165,43 +176,46 @@ export default function ProjectPage({ params }: Route.ComponentProps) {
           />
         </div>
 
-        <p className="mt-8 flex items-start gap-3 rounded-[var(--radius-md)] bg-surface-soft px-4 py-3.5 text-[0.9375rem] text-ink md:items-center md:px-5">
-          <Info aria-hidden="true" strokeWidth={1.5} className="mt-0.5 size-5 shrink-0 text-accent-strong md:mt-0" />
-          {t.project.notice}
-        </p>
-
-        <header className="pt-10 md:pt-14">
-          <p className="hero-in t-label text-ink-3">
-            {t.projects.concept} · {l(project.categoryLabel)}
+        <header className="pt-8 md:pt-12" data-build-hero="">
+          <p className="hero-in flex flex-wrap items-center gap-2">
+            <Tag tone="soft">{l(project.categoryLabel)}</Tag>
+            <span className="t-label text-ink-3">{t.projects.concept}</span>
           </p>
           <h1 className="hero-in-solid t-display mt-5 max-w-[16ch]" style={{ ["--d" as string]: "60ms" }}>
             {l(project.title)}
           </h1>
-          <p className="hero-in t-lead mt-6 max-w-[48ch] text-ink-2" style={{ ["--d" as string]: "120ms" }}>
+          <p className="hero-in-solid t-lead mt-6 max-w-[52ch] text-ink-2" style={{ ["--d" as string]: "120ms" }}>
             {l(project.lead)}
           </p>
-          <dl className="mt-10 grid border-y border-line md:grid-cols-3">
-            {[
-              [t.project.category, l(project.categoryLabel)],
-              [t.project.platform, l(project.platform)],
-              [t.project.stack, project.tags.join(" · ")],
-            ].map(([k, v], i) => (
-              <div key={k} className={cn("py-4 md:px-6 md:py-5", i > 0 && "border-t border-line md:border-t-0 md:border-l", i === 0 && "md:pl-0")}>
-                <dt className="t-label text-ink-3">{k}</dt>
-                <dd className="mt-1.5">{v}</dd>
-              </div>
-            ))}
-          </dl>
         </header>
 
-        <div className="relative mt-12 border border-line-strong bg-surface md:mt-16" style={{ viewTransitionName: PREVIEW_VT }}>
+        {/* The product, early: right under the title. */}
+        <div className="relative mt-10 border border-line-strong bg-surface md:mt-12" style={{ viewTransitionName: PREVIEW_VT }}>
           <CornerMarks />
           <div className="aspect-[4/3] md:aspect-[16/10]" role="img" aria-label={t.projects.previewAlt.replace("{title}", l(project.title))}>
             <Preview project={project} />
           </div>
         </div>
 
-        <div className="grid-site mt-16 md:mt-24">
+        <p className="mt-6 flex items-start gap-3 rounded-[var(--radius-md)] bg-surface-soft px-4 py-3.5 text-[0.9375rem] text-ink md:items-center md:px-5">
+          <Info aria-hidden="true" strokeWidth={1.5} className="mt-0.5 size-5 shrink-0 text-accent-strong md:mt-0" />
+          {t.project.notice}
+        </p>
+
+        <dl className="mt-8 grid border-y border-line md:grid-cols-3">
+          {[
+            [t.project.category, l(project.categoryLabel)],
+            [t.project.platform, l(project.platform)],
+            [t.project.stack, project.tags.join(" · ")],
+          ].map(([k, v], i) => (
+            <div key={k} className={cn("py-4 md:px-6 md:py-5", i > 0 && "border-t border-line md:border-t-0 md:border-l", i === 0 && "md:pl-0")}>
+              <dt className="t-label text-ink-3">{k}</dt>
+              <dd className="mt-1.5">{v}</dd>
+            </div>
+          ))}
+        </dl>
+
+        <div className="grid-site mt-14 md:mt-20">
           <aside className="hidden lg:col-span-3 lg:block">
             <SectionIndex items={SECTION_IDS.map((id) => ({ id, label: labels[id] }))} contentRef={contentRef} />
           </aside>
@@ -209,14 +223,51 @@ export default function ProjectPage({ params }: Route.ComponentProps) {
             <Block id="vazifa" title={t.project.task}>
               <Reveal>
                 <p className="t-lead max-w-[60ch] text-ink-2">{l(project.task)}</p>
+                <p className="mt-6 max-w-[60ch]">{l(project.solution)}</p>
               </Reveal>
             </Block>
-            <Block id="yechim" title={t.project.solution}>
-              <Reveal>
-                <p className="t-lead max-w-[60ch] text-ink-2">{l(project.solution)}</p>
-              </Reveal>
+
+            <Block id="foydalanuvchilar" title={cs.users}>
+              <RevealGroup as="ul" className="grid gap-px border border-line bg-line md:grid-cols-3">
+                {project.users.map((u, i) => (
+                  <li key={i} className="bg-bg p-5">
+                    <p className="t-label text-ink-3">{String(i + 1).padStart(2, "0")}</p>
+                    <h3 className="mt-4 font-semibold">{l(u.role)}</h3>
+                    <p className="mt-2 text-ink-2">{l(u.need)}</p>
+                  </li>
+                ))}
+              </RevealGroup>
             </Block>
-            <Block id="funksiyalar" title={t.project.features}>
+
+            <Block id="oqim" title={cs.flow}>
+              <RevealGroup as="ol" className="grid gap-5">
+                {project.flow.map((step, i) => (
+                  <li key={i} className="relative grid grid-cols-[9px_1fr] gap-x-5">
+                    {i < project.flow.length - 1 && (
+                      <span aria-hidden="true" className="absolute top-[1.15rem] -bottom-[1.4rem] left-[4px] w-px bg-line-strong" />
+                    )}
+                    <HairlineNode state={i === project.flow.length - 1 ? "active" : "done"} className="relative mt-[0.45rem]" />
+                    <p>
+                      <span className="t-label mr-2 text-ink-3">{fmt(cs.flowStep, { n: i + 1 })}</span>
+                      {l(step)}
+                    </p>
+                  </li>
+                ))}
+              </RevealGroup>
+            </Block>
+
+            <Block id="qarorlar" title={cs.decisions}>
+              <RevealGroup as="ul" className="border-t border-line">
+                {project.decisions.map((d, i) => (
+                  <li key={i} className="grid gap-1 border-b border-line py-5 md:grid-cols-[14rem_1fr] md:gap-6">
+                    <h3 className="font-semibold">{l(d.title)}</h3>
+                    <p className="text-ink-2">{l(d.text)}</p>
+                  </li>
+                ))}
+              </RevealGroup>
+            </Block>
+
+            <Block id="funksiyalar" title={cs.shown}>
               <RevealGroup as="ul" className="border-t border-line">
                 {project.features.map((f, i) => (
                   <li key={i} className="grid gap-1 border-b border-line py-5 md:grid-cols-[14rem_1fr] md:gap-6">
@@ -226,27 +277,53 @@ export default function ProjectPage({ params }: Route.ComponentProps) {
                 ))}
               </RevealGroup>
             </Block>
+
             <Block id="korinishlar" title={t.project.screens}>
               <Screens project={project} />
             </Block>
-            <Block id="texnologiyalar" title={t.project.stack}>
-              <ul className="flex flex-wrap gap-2">
-                {project.tags.map((tag) => (
-                  <li key={tag}>
-                    <Tag className="h-9 px-3 text-[0.875rem]">{tag}</Tag>
-                  </li>
-                ))}
-              </ul>
+
+            <Block id="yondashuv" title={cs.approach}>
+              <Reveal>
+                <p className="max-w-[60ch] text-ink-2">{l(project.approach)}</p>
+                <ul className="mt-6 flex flex-wrap gap-2" aria-label={t.project.stack}>
+                  {project.tags.map((tag) => (
+                    <li key={tag}>
+                      <Tag className="h-9 px-3 text-[0.875rem]">{tag}</Tag>
+                    </li>
+                  ))}
+                </ul>
+              </Reveal>
             </Block>
-            <Block id="foyda" title={t.project.benefits} note={t.project.benefitsNote}>
-              <RevealGroup as="ul" className="grid gap-x-[var(--gap)] md:grid-cols-3">
-                {project.benefits.map((b, i) => (
-                  <li key={i} className="border-t border-line pt-5 pb-6">
-                    <p className="t-label text-ink-3">{String(i + 1).padStart(2, "0")}</p>
-                    <p className="mt-3">{l(b)}</p>
-                  </li>
-                ))}
-              </RevealGroup>
+
+            <Block id="chegaralar" title={cs.limits} note={t.project.benefitsNote}>
+              <div className="grid gap-10 md:grid-cols-2">
+                <div>
+                  <h3 className="t-label mb-3 text-ink-3">{t.project.benefits}</h3>
+                  <ul className="border-t border-line">
+                    {project.benefits.map((b, i) => (
+                      <li key={i} className="border-b border-line py-3.5">
+                        {l(b)}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <div>
+                  <h3 className="t-label mb-3 text-ink-3">{cs.limits}</h3>
+                  <ul className="border-t border-line">
+                    {project.limits.map((b, i) => (
+                      <li key={i} className="border-b border-line py-3.5 text-ink-2">
+                        {l(b)}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </Block>
+
+            <Block id="keyingi-qadam" title={cs.nextStep}>
+              <Reveal>
+                <p className="t-lead max-w-[60ch] text-ink-2">{l(project.nextStep)}</p>
+              </Reveal>
             </Block>
           </div>
         </div>

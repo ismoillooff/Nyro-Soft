@@ -50,7 +50,7 @@ export function Accordion({ items, headingLevel = "h3" }: { items: readonly Acco
                   aria-hidden="true"
                   strokeWidth={1.5}
                   className={cn(
-                    "size-5 shrink-0 text-ink-2 transition-transform duration-[260ms] ease-(--ease-out) motion-reduce:transition-none",
+                    "size-5 shrink-0 text-ink-2 transition-transform duration-(--dur-ui) ease-(--ease-out) motion-reduce:transition-none",
                     isOpen && "rotate-45 text-ink",
                   )}
                 />

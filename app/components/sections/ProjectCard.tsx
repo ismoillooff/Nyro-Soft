@@ -53,7 +53,7 @@ export function ProjectCard({ project, headingLevel = "h3" }: { project: Project
       className="group group/btn relative rounded-[var(--radius-sm)] has-[a:focus-visible]:outline-2 has-[a:focus-visible]:outline-offset-8 has-[a:focus-visible]:outline-accent"
     >
       <div
-        className="relative overflow-hidden border border-line-strong bg-surface transition-colors duration-500 ease-(--ease-out) group-hover:border-line-accent group-has-[a:focus-visible]:border-line-accent motion-reduce:duration-200"
+        className="relative overflow-hidden border border-line-strong bg-surface transition-colors duration-(--dur-reveal) ease-(--ease-out) group-hover:border-line-accent group-has-[a:focus-visible]:border-line-accent motion-reduce:duration-(--dur-ui)"
         style={{ viewTransitionName: transitioning ? PREVIEW_VT : undefined }}
       >
         <HairlineBeam trigger="hover" className="-top-px right-0 left-0 z-10" length={72} duration={1200} />
@@ -63,17 +63,16 @@ export function ProjectCard({ project, headingLevel = "h3" }: { project: Project
             className="absolute inset-x-0 -top-[3%] h-[106%] bg-surface-soft"
             style={desktop && !reduce ? { y } : undefined}
           >
-            <div className="absolute inset-x-0 top-[2.83%] bottom-[2.83%] transition-transform duration-200 ease-(--ease-out) group-hover:scale-[1.025] group-has-[a:focus-visible]:scale-[1.025] motion-reduce:transform-none">
+            <div className="absolute inset-x-0 top-[2.83%] bottom-[2.83%] transition-transform duration-(--dur-ui) ease-(--ease-out) group-hover:scale-[1.025] group-has-[a:focus-visible]:scale-[1.025] motion-reduce:transform-none">
               <ProjectPreview project={project} />
             </div>
           </m.div>
         </div>
       </div>
 
-      <p className="t-label mt-5 flex flex-wrap items-center gap-x-2 text-ink-3">
-        <span>{t.projects.concept}</span>
-        <span aria-hidden="true">·</span>
-        <span>{l(project.categoryLabel)}</span>
+      <p className="mt-5 flex flex-wrap items-center gap-2">
+        <Tag tone="soft">{l(project.categoryLabel)}</Tag>
+        <span className="t-label text-ink-3">{t.projects.concept}</span>
       </p>
       <Heading className="t-h3 mt-2">
         <Link to={href} viewTransition className="outline-none after:absolute after:inset-0 after:content-['']">
@@ -81,6 +80,21 @@ export function ProjectCard({ project, headingLevel = "h3" }: { project: Project
         </Link>
       </Heading>
       <p className="mt-2 max-w-[52ch] text-ink-2">{l(project.description)}</p>
+      <dl className="mt-6 grid border-t border-line text-[0.9375rem]">
+        {(
+          [
+            [t.projects.storyTask, project.story.task],
+            [t.projects.storyFlow, project.story.flow],
+            [t.projects.storyDecision, project.story.decision],
+            [t.projects.storyOpportunity, project.story.opportunity],
+          ] as const
+        ).map(([k, v]) => (
+          <div key={k} className="grid grid-cols-[6.5rem_1fr] gap-3 border-b border-line py-2.5 md:grid-cols-[7.5rem_1fr]">
+            <dt className="t-label pt-0.5 text-ink-3">{k}</dt>
+            <dd className="text-ink-2">{l(v)}</dd>
+          </div>
+        ))}
+      </dl>
       <ul className="mt-4 flex flex-wrap gap-2" aria-label={t.project.stack}>
         {project.tags.map((tag) => (
           <li key={tag}>

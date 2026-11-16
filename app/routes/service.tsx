@@ -52,7 +52,7 @@ export default function ServicePage({ params }: Route.ComponentProps) {
   return (
     <article>
       {/* Hero */}
-      <header className="container-site">
+      <header className="container-site" data-build-hero="">
         <div className="pt-8 md:pt-12">
           <Breadcrumb
             items={[
@@ -70,10 +70,10 @@ export default function ServicePage({ params }: Route.ComponentProps) {
             <h1 className="hero-in-solid t-display mt-5" style={{ ["--d" as string]: "60ms" }}>
               {l(s.title)}
             </h1>
-            <p className="hero-in t-lead mt-6 max-w-[44ch] text-ink-2" style={{ ["--d" as string]: "120ms" }}>
+            <p className="hero-in-solid t-lead mt-6 max-w-[44ch] text-ink-2" style={{ ["--d" as string]: "120ms" }}>
               {l(s.description)}
             </p>
-            <div className="hero-in mt-9" style={{ ["--d" as string]: "180ms" }}>
+            <div className="hero-in-solid mt-9" style={{ ["--d" as string]: "180ms" }}>
               <ButtonLink to={briefHref} arrow="up-right">
                 {t.service.cta}
               </ButtonLink>

@@ -55,7 +55,7 @@ export function useTabs(items: readonly TabItem[], value: string, onChange: (id:
             onClick={() => onChange(item.id)}
             onKeyDown={onKeyDown}
             className={cn(
-              "relative inline-flex h-12 items-center px-4 text-[0.9375rem] transition-colors duration-[180ms] outline-offset-[-2px] md:px-5",
+              "relative inline-flex h-12 shrink-0 items-center justify-center px-1.5 text-[0.8125rem] whitespace-nowrap transition-colors duration-(--dur-micro) outline-offset-[-2px] sm:px-4 sm:text-[0.9375rem] md:px-5",
               selected ? "text-ink" : "text-ink-2 hover:text-ink",
             )}
           >

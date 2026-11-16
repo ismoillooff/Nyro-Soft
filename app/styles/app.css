@@ -104,18 +104,23 @@
   --radius-md: 10px;
   --radius-lg: 14px;
 
+  /* Motion: mirrors app/motion/tokens.ts */
   --ease-out: cubic-bezier(0.32, 0.72, 0, 1);
   --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
-  --dur-micro: 180ms;
+  --dur-press: 140ms;
+  --dur-micro: 160ms;
   --dur-ui: 240ms;
-  --dur-reveal: 560ms;
+  --dur-reveal: 450ms;
   --dur-figure: 700ms;
   --dur-route: 260ms;
+  --dist-small: 8px;
+  --dist-reveal: 12px;
+  --stagger: 50ms;
 
   --header-h: 64px;
   --container: 1240px;
   --pad-x: clamp(16px, 4.5vw, 48px);
-  --section-y: clamp(88px, 11vw, 160px);
+  --section-y: clamp(80px, 9vw, 136px);
   --gap: 16px;
 }
 @media (max-width: 767.98px) {
@@ -158,6 +163,11 @@
   --ease-out: var(--ease-out);
   --ease-in-out: var(--ease-in-out);
 }
+
+/* Pinned scroll scenes: wide, tall enough to hold the scene, and motion allowed. */
+@custom-variant pin (@media (min-width: 64rem) and (min-height: 760px) and (prefers-reduced-motion: no-preference));
+/* Sticky side columns only where the viewport is tall enough to show them whole. */
+@custom-variant tall (@media (min-height: 760px));
 
 @theme {
   --breakpoint-*: initial;
@@ -306,25 +316,41 @@
 }
 
 /* ─── Hero entrance: CSS only, does not wait for hydration ───────────────── */
+/*
+ * label → headline lines → lead → CTA, 50ms apart, then the N's plates settle
+ * (NYRO_ENTER_CSS, 700ms). Only the small label fades in; the h1, the lead
+ * and the buttons are never transparent — they only rise 8px — so the main
+ * message and the CTA are readable on the very first paint, before any JS.
+ */
 @keyframes nyro-rise {
   from {
     opacity: 0;
-    transform: translate3d(0, 12px, 0);
+    transform: translate3d(0, var(--dist-small), 0);
   }
 }
 @keyframes nyro-rise-solid {
   from {
-    transform: translate3d(0, 8px, 0);
+    transform: translate3d(0, var(--dist-small), 0);
   }
 }
 @media (prefers-reduced-motion: no-preference) {
   .hero-in {
-    animation: nyro-rise 450ms var(--ease-out) both;
+    animation: nyro-rise var(--dur-reveal) var(--ease-out) both;
     animation-delay: var(--d, 0ms);
   }
   .hero-in-solid {
-    animation: nyro-rise-solid 450ms var(--ease-out) both;
+    animation: nyro-rise-solid var(--dur-reveal) var(--ease-out) both;
     animation-delay: var(--d, 0ms);
+  }
+}
+
+/* The N settles after the CTA has landed (overrides NYRO_ENTER_CSS delays). */
+@media (prefers-reduced-motion: no-preference) {
+  [data-hero-n] .hl-nyro-enter > g > g:nth-child(2) {
+    animation-delay: 320ms;
+  }
+  [data-hero-n] .hl-nyro-enter > g > g:nth-child(3) {
+    animation-delay: 280ms;
   }
 }
 
@@ -401,6 +427,18 @@
   background: linear-gradient(90deg, transparent, var(--accent), transparent);
 }
 
+/* ─── Demo: the newly shown mode fades in (the panel itself is display:none when inactive) ── */
+@keyframes nyro-fade {
+  from {
+    opacity: 0;
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .demo-panel:not([hidden]) {
+    animation: nyro-fade var(--dur-ui) var(--ease-out);
+  }
+}
+
 /* ─── Mobile menu ─────────────────────────────────────────────────────────── */
 @keyframes nyro-menu-item {
   from {
@@ -412,6 +450,26 @@
   dialog[open] .menu-item {
     animation: nyro-menu-item var(--dur-ui) var(--ease-out) both;
     animation-delay: calc(var(--i, 0) * 40ms);
+  }
+}
+@keyframes nyro-menu-in {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes nyro-menu-out {
+  to {
+    opacity: 0;
+    transform: translate3d(0, calc(-1 * var(--dist-small)), 0);
+  }
+}
+@media (prefers-reduced-motion: no-preference) {
+  dialog.menu[open] {
+    animation: nyro-menu-in var(--dur-ui) var(--ease-out);
+  }
+  dialog.menu[data-closing] {
+    animation: nyro-menu-out 200ms var(--ease-out) forwards;
+    pointer-events: none;
   }
 }
 dialog.menu::backdrop {

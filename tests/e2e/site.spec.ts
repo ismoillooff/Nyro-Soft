@@ -136,27 +136,47 @@ test.describe("keyboard and widgets", () => {
     await expect(toggle).toBeFocused();
   });
 
-  test("demo tabs follow the WAI-ARIA pattern", async ({ page }) => {
+  test("demo modes follow the WAI-ARIA tab pattern", async ({ page }) => {
     await page.goto("/#demo");
     const first = page.getByRole("tab", { name: "Wireframe" });
     await first.focus();
     await page.keyboard.press("ArrowRight");
     await expect(page.getByRole("tab", { name: "Dizayn" })).toHaveAttribute("aria-selected", "true");
-    await page.keyboard.press("End");
-    await expect(page.getByRole("tab", { name: "Natija" })).toBeFocused();
+    await page.keyboard.press("ArrowRight");
     await expect(page.getByText("Ishlaydigan namuna · ma’lumotlar namunaviy")).toBeVisible();
+    await page.keyboard.press("End");
+    await expect(page.getByRole("tab", { name: "Taqqoslash" })).toBeFocused();
     await page.keyboard.press("Home");
     await expect(first).toHaveAttribute("aria-selected", "true");
   });
 
-  test("project filter announces the count and shows the empty state", async ({ page }) => {
-    await page.goto("/#loyihalar");
-    const button = page.getByRole("button", { name: /Avtomatlashtirish/ });
-    await button.click();
-    await expect(button).toHaveAttribute("aria-pressed", "true");
-    await expect(page.getByRole("status").filter({ hasText: "0 ta loyiha ko‘rsatilmoqda" })).toBeAttached();
-    await expect(page.getByText("Bu yo‘nalishda hozircha konsept loyiha yo‘q.")).toBeVisible();
-    await expect(button).toBeFocused();
+  test("the working sample keeps its state across mode switches", async ({ page }) => {
+    await page.goto("/#demo");
+    await page.getByRole("tab", { name: "Natija" }).click();
+    const search = page.getByRole("searchbox", { name: "Buyurtmalarni qidirish" });
+    await search.fill("Aziz");
+    await page.getByRole("tab", { name: "Dizayn" }).click();
+    await page.getByRole("tab", { name: "Natija" }).click();
+    await expect(search).toHaveValue("Aziz");
+  });
+
+  test("comparison works from the keyboard", async ({ page }) => {
+    await page.goto("/#demo");
+    await page.getByRole("tab", { name: "Taqqoslash" }).click();
+    const slider = page.getByRole("slider", { name: "Wireframe va dizaynni taqqoslash" });
+    await slider.focus();
+    await page.keyboard.press("Home");
+    await expect(slider).toHaveValue("0");
+    await page.keyboard.press("Shift+ArrowRight");
+    await expect(slider).toHaveValue("10");
+  });
+
+  test("project cards carry their category instead of filters", async ({ page }) => {
+    await page.goto("/");
+    const list = page.getByRole("list", { name: "Konsept loyihalar" });
+    await expect(list.locator(":scope > li").first()).toBeVisible();
+    await expect(page.locator("#loyihalar button[aria-pressed]")).toHaveCount(0);
+    await expect(list.getByText("Web", { exact: true })).toBeVisible();
   });
 
   test("FAQ opens with Enter and exposes a labelled region", async ({ page }) => {

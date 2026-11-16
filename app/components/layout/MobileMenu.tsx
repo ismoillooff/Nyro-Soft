@@ -30,7 +30,31 @@ export function MobileMenu({ items, activeId }: { items: readonly NavItem[]; act
     firstLinkRef.current?.focus();
   }, []);
 
-  const hide = useCallback(() => dialogRef.current?.close(), []);
+  /** Navigation closes at once, so the page can scroll to the target without waiting. */
+  const closeNow = useCallback(() => dialogRef.current?.close(), []);
+
+  /** Closes with a short exit (items fade, the sheet lifts away); instantly under reduced motion. */
+  const hide = useCallback(() => {
+    const d = dialogRef.current;
+    if (!d?.open || d.hasAttribute("data-closing")) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      d.close();
+      return;
+    }
+    d.setAttribute("data-closing", "");
+    const finish = () => {
+      window.clearTimeout(timer);
+      d.removeEventListener("animationend", onEnd);
+      d.removeAttribute("data-closing");
+      if (d.open) d.close();
+    };
+    const onEnd = (e: AnimationEvent) => {
+      if (e.target === d) finish();
+    };
+    // The timeout guarantees the close even if the animation never runs.
+    const timer = window.setTimeout(finish, 320);
+    d.addEventListener("animationend", onEnd);
+  }, []);
 
   useEffect(() => {
     const d = dialogRef.current;
@@ -40,15 +64,22 @@ export function MobileMenu({ items, activeId }: { items: readonly NavItem[]; act
       toggleRef.current?.focus({ preventScroll: true });
     };
     d.addEventListener("close", onClose);
+    // Escape: play the same exit instead of the instant native close.
+    const onCancel = (e: Event) => {
+      e.preventDefault();
+      hide();
+    };
+    d.addEventListener("cancel", onCancel);
     // Close if the viewport grows past the breakpoint while open.
     const mq = window.matchMedia("(min-width: 1024px)");
     const onMq = () => mq.matches && d.open && d.close();
     mq.addEventListener("change", onMq);
     return () => {
       d.removeEventListener("close", onClose);
+      d.removeEventListener("cancel", onCancel);
       mq.removeEventListener("change", onMq);
     };
-  }, []);
+  }, [hide]);
 
   return (
     <>
@@ -72,7 +103,7 @@ export function MobileMenu({ items, activeId }: { items: readonly NavItem[]; act
       >
         <div className="flex h-full flex-col">
           <div className="container-site flex h-[var(--header-h)] shrink-0 items-center justify-between border-b border-line">
-            <Link to="/" onClick={hide} aria-label={t.a11y.home} className="-m-2 inline-flex min-h-11 items-center p-2">
+            <Link to="/" onClick={closeNow} aria-label={t.a11y.home} className="-m-2 inline-flex min-h-11 items-center p-2">
               <Wordmark />
             </Link>
             <button
@@ -93,7 +124,7 @@ export function MobileMenu({ items, activeId }: { items: readonly NavItem[]; act
                   <Link
                     ref={i === 0 ? firstLinkRef : undefined}
                     to={item.to}
-                    onClick={hide}
+                    onClick={closeNow}
                     aria-current={activeId === item.id ? "true" : undefined}
                     className={cn(
                       "flex h-14 items-center justify-between text-[1.375rem] font-medium tracking-[-0.02em]",
@@ -108,7 +139,7 @@ export function MobileMenu({ items, activeId }: { items: readonly NavItem[]; act
             </ul>
             <LanguageSwitch className="menu-item mt-6" />
             <div className="menu-item mt-8" style={{ ["--i" as string]: items.length }}>
-              <ButtonLink to="/#brif" onClick={hide} arrow="up-right" className="w-full">
+              <ButtonLink to="/#brif" onClick={closeNow} arrow="up-right" className="w-full">
                 {t.nav.contact}
               </ButtonLink>
             </div>

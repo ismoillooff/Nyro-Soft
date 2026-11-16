@@ -15,7 +15,7 @@ export function fieldDescribedBy(id: string, opts: { hint?: boolean; error?: boo
 export function controlClass(invalid: boolean, extra?: string): string {
   return cn(
     "block w-full min-h-12 rounded-[var(--radius-md)] border bg-surface px-4 text-[1rem] leading-6 text-ink",
-    "placeholder:text-ink-3 transition-colors duration-[180ms] ease-(--ease-out)",
+    "placeholder:text-ink-3 transition-colors duration-(--dur-micro) ease-(--ease-out)",
     "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent",
     invalid ? "border-ink" : "border-line-strong hover:border-[color-mix(in_oklab,var(--ink)_40%,transparent)]",
     extra,

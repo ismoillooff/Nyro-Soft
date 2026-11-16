@@ -19,6 +19,20 @@ export interface Project {
   readonly benefits: readonly Localized[];
   /** The service page this concept belongs to. */
   readonly service: string;
+  /** Card story: task → user flow → decision → opportunity, one short line each (≤ 12 words). */
+  readonly story: { readonly task: Localized; readonly flow: Localized; readonly decision: Localized; readonly opportunity: Localized };
+  /** 3 key user types. */
+  readonly users: readonly { readonly role: Localized; readonly need: Localized }[];
+  /** The main user flow, 4–5 short steps. */
+  readonly flow: readonly Localized[];
+  /** 3 key design decisions and why. */
+  readonly decisions: readonly { readonly title: Localized; readonly text: Localized }[];
+  /** Technical approach, 2–3 sentences, consistent with `tags`. */
+  readonly approach: Localized;
+  /** Honest limits of the concept. */
+  readonly limits: readonly Localized[];
+  /** What a real project would do next. */
+  readonly nextStep: Localized;
 }
 
 export const projects: readonly Project[] = [
@@ -55,6 +69,49 @@ export const projects: readonly Project[] = [
       { uz: "Hisobot qo‘lda yig‘ilmaydi — tizim o‘zi tayyorlaydi.", ru: "Отчёт не собирается вручную — система готовит его сама." },
     ],
     service: "web-platformalar",
+    story: {
+      task: { uz: "Buyurtmalar Telegram, telefon va jadvallar orasida tarqalgan.", ru: "Заказы разбросаны между Telegram, телефоном и таблицами." },
+      flow: { uz: "Buyurtma qabul qilinadi, holati yangilanadi, ombor va hisobotga tushadi.", ru: "Заказ принят, статус обновлён, данные попадают на склад и в отчёт." },
+      decision: { uz: "Har bir rol faqat o‘z ishiga kerakli ekranni ko‘radi.", ru: "Каждая роль видит только экран, нужный для её работы." },
+      opportunity: { uz: "Ma’lumotlar bir joyda bo‘lsa, hisobotni qo‘lda yig‘ish shart bo‘lmaydi.", ru: "Когда данные в одном месте, отчёт можно не собирать вручную." },
+    },
+    users: [
+      { role: { uz: "Menejer", ru: "Менеджер" }, need: { uz: "Buyurtmani tez topish va holatini o‘zgartirish.", ru: "Быстро найти заказ и сменить его статус." } },
+      { role: { uz: "Omborchi", ru: "Кладовщик" }, need: { uz: "Kirim-chiqimni yozish va kam qolgan mahsulotni ko‘rish.", ru: "Записывать приход и расход, видеть заканчивающиеся товары." } },
+      { role: { uz: "Rahbar", ru: "Руководитель" }, need: { uz: "Asosiy ko‘rsatkichlar va hisobotlarni bir joyda ko‘rish.", ru: "Видеть основные показатели и отчёты в одном месте." } },
+    ],
+    flow: [
+      { uz: "Buyurtma qabul qilinadi va mijozga bog‘lanadi", ru: "Заказ принимается и привязывается к клиенту" },
+      { uz: "Menejer buyurtma holatini yangilaydi", ru: "Менеджер обновляет статус заказа" },
+      { uz: "Omborchi mahsulotni chiqim qiladi", ru: "Кладовщик списывает товар со склада" },
+      { uz: "Ombor qoldig‘i yangilanadi", ru: "Остаток на складе обновляется" },
+      { uz: "Buyurtma hisobotda ko‘rinadi", ru: "Заказ отражается в отчёте" },
+    ],
+    decisions: [
+      {
+        title: { uz: "Holat — asosiy o‘q", ru: "Статус — главная ось" },
+        text: { uz: "Buyurtmalar ro‘yxati holat bo‘yicha tuzilgan, chunki menejer kun davomida eng ko‘p «buyurtma hozir qayerda?» degan savolga javob qidiradi.", ru: "Список заказов построен вокруг статуса, потому что в течение дня менеджер чаще всего ищет ответ на вопрос «где сейчас этот заказ?»." },
+      },
+      {
+        title: { uz: "Rolga mos ekranlar", ru: "Экраны по ролям" },
+        text: { uz: "Menejer, omborchi va rahbar turli vazifalarni bajaradi, shuning uchun har biri faqat kerakli ma’lumot va huquqlarni ko‘radi.", ru: "Менеджер, кладовщик и руководитель решают разные задачи, поэтому каждый видит только нужные ему данные и права." },
+      },
+      {
+        title: { uz: "Bitta mijoz kartasi", ru: "Единая карточка клиента" },
+        text: { uz: "Buyurtmalar tarixi va izohlar bitta kartada jamlangan, shunda ularni chat va jadvallardan qidirishga hojat qolmaydi.", ru: "История заказов и комментарии собраны в одной карточке, чтобы их не приходилось искать в чатах и таблицах." },
+      },
+    ],
+    approach: {
+      uz: "Interfeys React va TypeScript’da, server qismi FastAPI’da yoziladi. Buyurtma, mijoz va ombor ma’lumotlari PostgreSQL’da o‘zaro bog‘langan holda saqlanadi. Rollar va huquqlar server tomonida tekshiriladi.", ru: "Интерфейс пишется на React и TypeScript, серверная часть — на FastAPI. Данные о заказах, клиентах и складе хранятся в PostgreSQL и связаны между собой. Роли и права проверяются на стороне сервера.",
+    },
+    limits: [
+      { uz: "Konseptda namunaviy ma’lumotlar ishlatilgan.", ru: "В концепте используются демонстрационные данные." },
+      { uz: "Telegram, to‘lov yoki buxgalteriya tizimlari bilan haqiqiy integratsiya yo‘q.", ru: "Нет реальных интеграций с Telegram, платёжными или учётными системами." },
+      { uz: "Haqiqiy foydalanuvchilar bilan sinovdan o‘tkazilmagan.", ru: "Не проверялся на реальных пользователях." },
+    ],
+    nextStep: {
+      uz: "Haqiqiy loyihada avval mavjud jarayonlar va xodimlarning ishini o‘rganamiz, prototipni ular bilan sinab ko‘ramiz. Shundan so‘ng birinchi versiya hajmini kelishamiz.", ru: "В реальном проекте сначала изучаем текущие процессы и работу сотрудников и проверяем прототип вместе с ними. После этого согласуем объём первой версии.",
+    },
   },
   {
     slug: "mobil-moliya-ilovasi",
@@ -88,6 +145,49 @@ export const projects: readonly Project[] = [
       { uz: "Muhim to‘lovlar unutilmaydi.", ru: "Важные платежи не забываются." },
     ],
     service: "mobil-ilovalar",
+    story: {
+      task: { uz: "Xarajatlarni yozish uzoq, natija esa ko‘rinmaydi.", ru: "Записывать расходы долго, а результата не видно." },
+      flow: { uz: "Xarajat ikki qadamda qo‘shiladi va budjetda darhol ko‘rinadi.", ru: "Расход добавляется в два шага и сразу виден в бюджете." },
+      decision: { uz: "Asosiy ekranda bitta tugma — tez kiritish birinchi o‘rinda.", ru: "Одна кнопка на главном экране — быстрый ввод на первом месте." },
+      opportunity: { uz: "Kiritish tez bo‘lsa, xarajatni yozish odatga aylanishi mumkin.", ru: "Если ввод быстрый, запись расходов может войти в привычку." },
+    },
+    users: [
+      { role: { uz: "Kundalik foydalanuvchi", ru: "Повседневный пользователь" }, need: { uz: "Xarajatni bir necha soniyada yozib qo‘yish.", ru: "Записать расход за несколько секунд." } },
+      { role: { uz: "Oila budjetini yurituvchi", ru: "Тот, кто ведёт семейный бюджет" }, need: { uz: "Toifalar bo‘yicha chegara va qoldiqni ko‘rish.", ru: "Видеть лимиты и остаток по категориям." } },
+      { role: { uz: "Muntazam to‘lovlari bor foydalanuvchi", ru: "Пользователь с регулярными платежами" }, need: { uz: "Kommunal va obuna to‘lovlarini unutmaslik.", ru: "Не забывать о коммунальных платежах и подписках." } },
+    ],
+    flow: [
+      { uz: "Ilovani ochish", ru: "Открыть приложение" },
+      { uz: "Summani kiritish", ru: "Ввести сумму" },
+      { uz: "Toifani tanlash", ru: "Выбрать категорию" },
+      { uz: "Toifa qoldig‘ini ko‘rish", ru: "Увидеть остаток по категории" },
+      { uz: "Oy oxirida natijani ko‘rib chiqish", ru: "В конце месяца посмотреть итоги" },
+    ],
+    decisions: [
+      {
+        title: { uz: "Ikki qadamli kiritish", ru: "Ввод в два шага" },
+        text: { uz: "Faqat summa va toifa so‘raladi, chunki uzun forma xarajat yozishni tashlab qo‘yishga sabab bo‘lishi mumkin.", ru: "Запрашиваются только сумма и категория, потому что из-за длинной формы учёт расходов легко бросить." },
+      },
+      {
+        title: { uz: "Toifa bo‘yicha chegaralar", ru: "Лимиты по категориям" },
+        text: { uz: "Umumiy budjet o‘rniga har bir toifa uchun chegara, shunda qayerda oshib ketish xavfi borligi oldindan ko‘rinadi.", ru: "Вместо общего бюджета — лимит на каждую категорию, чтобы заранее было видно, где есть риск превышения." },
+      },
+      {
+        title: { uz: "Sodda oylik grafik", ru: "Простой месячный график" },
+        text: { uz: "Murakkab hisobotlar o‘rniga bitta tushunarli grafik va o‘tgan oy bilan taqqoslash — natija bir qarashda ko‘rinishi uchun.", ru: "Вместо сложных отчётов — один понятный график и сравнение с прошлым месяцем, чтобы итог был виден с одного взгляда." },
+      },
+    ],
+    approach: {
+      uz: "Ilova React Native va TypeScript’da yoziladi, shunda iOS va Android uchun umumiy kod bazasi bo‘ladi. Ma’lumotlarni saqlash va qurilmalar o‘rtasida sinxronlash uchun FastAPI va PostgreSQL asosidagi server qismi ishlatiladi.", ru: "Приложение пишется на React Native и TypeScript, чтобы у iOS и Android была общая кодовая база. Для хранения данных и синхронизации между устройствами используется серверная часть на FastAPI и PostgreSQL.",
+    },
+    limits: [
+      { uz: "Konseptda namunaviy ma’lumotlar ishlatilgan.", ru: "В концепте используются демонстрационные данные." },
+      { uz: "Bank yoki to‘lov tizimlari bilan haqiqiy integratsiya yo‘q.", ru: "Нет реальных интеграций с банками или платёжными системами." },
+      { uz: "Haqiqiy foydalanuvchilar bilan sinovdan o‘tkazilmagan.", ru: "Не проверялся на реальных пользователях." },
+    ],
+    nextStep: {
+      uz: "Haqiqiy loyihada avval prototipni bir necha foydalanuvchi bilan sinab ko‘ramiz. So‘ng birinchi versiya funksiyalari va hajmini kelishamiz.", ru: "В реальном проекте сначала проверяем прототип на нескольких пользователях. Затем согласуем функции и объём первой версии.",
+    },
   },
 ];
 

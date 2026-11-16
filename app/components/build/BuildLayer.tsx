@@ -3,71 +3,67 @@ import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { fmt, useI18n } from "~/i18n";
 import { createEngine, type BuildEngine, type EngineState } from "./engine";
+import { HERO_ATTR } from "./mode";
 
-/** Label for the panel: the section's mono label ("03 — Xizmatlar") or its heading. */
-function labelOf(section: HTMLElement): string {
-  const mono = section.querySelector<HTMLElement>(".t-label");
-  const text = mono?.textContent?.includes("—") ? mono.textContent : null;
-  const heading = section.querySelector<HTMLElement>("h1, h2")?.textContent ?? "";
-  return (text ?? heading).replace(/\s+/g, " ").trim().slice(0, 48);
+function headingText(): string {
+  return document.querySelector("h1")?.textContent?.replace(/\s+/g, " ").trim().slice(0, 48) ?? "";
 }
 
 interface Props {
-  /** Build the page section by section as it scrolls in (first visit), or only the current view (replay). */
-  mode: "page" | "view";
+  /** "hero": the short automatic first-visit run. "view": the detailed replay of the current view. */
+  mode: "hero" | "view";
   /** Bumped by the replay button: builds the current view again. */
   replay: number;
-  /** The visitor closed it. */
+  /** The hero run played to the end (or was cut short by the visitor). */
+  onHeroDone: () => void;
+  /** The visitor closed it (× or Escape). */
   onClose: () => void;
 }
 
 /**
- * Owns one build engine for the current page: the first viewport right away,
- * then every section as it reaches 80% of the viewport height. Renders the
- * small control panel while something is being built.
+ * Owns one build engine for the current page and renders the small control
+ * panel while something is being built. The automatic run draws only the
+ * hero; scrolling, a key or a click ends it at once so it never competes with
+ * what the visitor is doing. The replay button builds the whole current view.
  */
-export default function BuildLayer({ mode, replay, onClose }: Props) {
+export default function BuildLayer({ mode, replay, onHeroDone, onClose }: Props) {
   const { t } = useI18n();
   const [state, setState] = useState<EngineState | null>(null);
   const engineRef = useRef<BuildEngine | null>(null);
-  /** The replay value this layer was mounted with is already built by the first job. */
   const mountedReplay = useRef(replay);
-  const onCloseRef = useRef(onClose);
-  onCloseRef.current = onClose;
+  const cb = useRef({ onHeroDone, onClose });
+  cb.current = { onHeroDone, onClose };
 
   useEffect(() => {
     const engine = createEngine(setState);
     engineRef.current = engine;
-    const pageLabel = document.querySelector("h1")?.textContent?.replace(/\s+/g, " ").trim().slice(0, 48) ?? "";
-    engine.enqueue(null, pageLabel);
+    let live = true;
 
-    let io: IntersectionObserver | null = null;
-    if (mode === "page") {
-      const vh = window.innerHeight;
-      const sections = Array.from(document.querySelectorAll<HTMLElement>("main section[aria-labelledby]")).filter(
-        // Sections already (partly) on screen were part of the first viewport.
-        (s) => s.getBoundingClientRect().top > vh * 0.8,
-      );
-      io = new IntersectionObserver(
-        (entries) => {
-          for (const e of entries) {
-            if (!e.isIntersecting) continue;
-            io?.unobserve(e.target);
-            engine.enqueue(e.target as HTMLElement, labelOf(e.target as HTMLElement));
-          }
-        },
-        { rootMargin: "0px 0px -20% 0px", threshold: 0 },
-      );
-      for (const s of sections) io.observe(s);
+    const cleanups: Array<() => void> = [];
+    if (mode === "hero") {
+      const hero = document.querySelector<HTMLElement>(`main [${HERO_ATTR}]`);
+      // The visitor takes over: wheel, touch, keys or a click end the automatic run.
+      const interrupt = () => engine.abort();
+      const opts = { passive: true, once: true } as const;
+      for (const type of ["wheel", "touchstart", "keydown", "pointerdown"] as const) {
+        window.addEventListener(type, interrupt, opts);
+        cleanups.push(() => window.removeEventListener(type, interrupt));
+      }
+      void engine.enqueue(hero, headingText(), "hero").then(() => {
+        if (live) cb.current.onHeroDone();
+      });
+    } else {
+      void engine.enqueue(null, headingText(), "full");
     }
 
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onCloseRef.current();
+      if (e.key === "Escape") cb.current.onClose();
     };
     window.addEventListener("keydown", onKey);
     return () => {
+      live = false;
       window.removeEventListener("keydown", onKey);
-      io?.disconnect();
+      cleanups.forEach((fn) => fn());
       engine.destroy();
       engineRef.current = null;
     };
@@ -75,7 +71,7 @@ export default function BuildLayer({ mode, replay, onClose }: Props) {
 
   // Replay: build what is on screen now, again.
   useEffect(() => {
-    if (replay !== mountedReplay.current) engineRef.current?.enqueue(null, document.querySelector("h1")?.textContent?.trim().slice(0, 48) ?? "");
+    if (replay !== mountedReplay.current) void engineRef.current?.enqueue(null, headingText(), "full");
   }, [replay]);
 
   if (!state?.busy) return null;
@@ -86,7 +82,7 @@ export default function BuildLayer({ mode, replay, onClose }: Props) {
       role="group"
       aria-label={t.build.panel}
       data-build-skip=""
-      className="fixed bottom-4 left-1/2 z-[61] flex max-w-[calc(100vw-24px)] -translate-x-1/2 items-center gap-2.5 rounded-full bg-ink py-1.5 pr-1.5 pl-3 text-white shadow-[var(--shadow-2)] sm:bottom-5 sm:gap-3"
+      className="build-panel fixed bottom-4 left-1/2 z-[61] flex max-w-[calc(100vw-24px)] -translate-x-1/2 items-center gap-2.5 rounded-full bg-ink py-1.5 pr-1.5 pl-3 text-white shadow-[var(--shadow-2)] sm:bottom-5 sm:gap-3"
     >
       <span aria-hidden="true" className="flex shrink-0">
         {Array.from({ length: Math.min(state.agents, 3) }, (_, i) => (
@@ -105,19 +101,21 @@ export default function BuildLayer({ mode, replay, onClose }: Props) {
         {state.done ? t.build.done : fmt(t.build.layers, { done: state.built, total: state.total })}
       </span>
       <span aria-hidden="true" className="relative hidden h-px w-14 overflow-hidden bg-white/20 sm:block">
-        <span className="absolute inset-0 origin-left bg-white transition-transform duration-200" style={{ transform: `scaleX(${progress})` }} />
+        <span className="absolute inset-0 origin-left bg-white transition-transform duration-(--dur-ui)" style={{ transform: `scaleX(${progress})` }} />
       </span>
+      {mode === "view" && (
+        <button
+          type="button"
+          onClick={() => engineRef.current?.setSpeed(state.speed === 1 ? 2 : 1)}
+          aria-label={t.build.speed}
+          className="t-label inline-flex h-9 min-w-9 shrink-0 items-center justify-center rounded-full bg-white/10 px-2.5 text-white hover:bg-white/20"
+        >
+          {state.speed}×
+        </button>
+      )}
       <button
         type="button"
-        onClick={() => engineRef.current?.setSpeed(state.speed === 1 ? 2 : 1)}
-        aria-label={t.build.speed}
-        className="t-label inline-flex h-9 min-w-9 shrink-0 items-center justify-center rounded-full bg-white/10 px-2.5 text-white hover:bg-white/20"
-      >
-        {state.speed}×
-      </button>
-      <button
-        type="button"
-        onClick={() => onCloseRef.current()}
+        onClick={() => cb.current.onClose()}
         aria-label={t.build.close}
         className="inline-flex size-9 shrink-0 items-center justify-center rounded-full text-white/80 hover:bg-white/10 hover:text-white"
       >

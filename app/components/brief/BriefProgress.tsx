@@ -17,7 +17,7 @@ export function BriefProgress({ step, title }: { step: BriefStepIndex; title: st
           <span
             key={i}
             className={cn(
-              "h-px transition-colors duration-[240ms] ease-(--ease-out)",
+              "h-px transition-colors duration-(--dur-ui) ease-(--ease-out)",
               i === step ? "bg-accent" : i < step ? "bg-ink" : "bg-line-strong",
             )}
           />
